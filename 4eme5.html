@@ -893,7 +893,7 @@
         auth.onAuthStateChanged((user) => {
             if (!user) {
                 // Pas connecté, rediriger vers la page de connexion
-                window.location.href = 'index.html';
+                window.location.href = 'login.html';
             } else {
                 // Afficher l'email de l'utilisateur
                 currentUserEmail = user.email;
