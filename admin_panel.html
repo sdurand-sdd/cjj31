@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Fiches de Suivi</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: white;
+            color: #ff6b6b;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-card.red {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        }
+
+        .stat-card.green {
+            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+        }
+
+        .stat-card.orange {
+            background: linear-gradient(135deg, #ff922b 0%, #fd7e14 100%);
+        }
+
+        .stat-value {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 5px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            border-radius: 5px;
+        }
+
+        .classes-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .badge-owner {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .badge-admin {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 5px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-view {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-transfer {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            color: #0c5460;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 4px solid #856404;
+            color: #856404;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="user-info" id="userInfo">👤 Chargement...</div>
+            <h1>🛠️ Panneau d'Administration</h1>
+            <p>Gestion globale de l'établissement</p>
+            <div class="nav-buttons">
+                <a href="fichedesuivi.html" class="nav-btn">← Retour à l'accueil</a>
+                <button class="nav-btn" onclick="logout()">🚪 Déconnexion</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="loading" id="loading">Chargement des données...</div>
+
+            <div id="mainContent" style="display: none;">
+                <div class="alert alert-info">
+                    <strong>🛡️ Mode Administrateur</strong><br>
+                    Vous avez accès à toutes les classes et toutes les données de l'établissement.
+                </div>
+
+                <!-- Statistiques -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalClasses">0</div>
+                        <div class="stat-label">Classes totales</div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-value" id="totalStudents">0</div>
+                        <div class="stat-label">Élèves suivis</div>
+                    </div>
+                    <div class="stat-card orange">
+                        <div class="stat-value" id="totalOwners">0</div>
+                        <div class="stat-label">Professeurs propriétaires</div>
+                    </div>
+                    <div class="stat-card red">
+                        <div class="stat-value" id="totalCollaborators">0</div>
+                        <div class="stat-label">Collaborateurs actifs</div>
+                    </div>
+                </div>
+
+                <!-- Liste des classes -->
+                <div class="section">
+                    <h2 class="section-title">Toutes les classes</h2>
+                    <div class="classes-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nom de la classe</th>
+                                    <th>Propriétaire</th>
+                                    <th>Élèves</th>
+                                    <th>Collaborateurs</th>
+                                    <th>Créée le</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="classesTableBody">
+                                <!-- Rempli par JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Zone dangereuse -->
+                <div class="section">
+                    <div class="alert alert-warning" style="background: #fff3cd; border-left: 4px solid #ff6b6b;">
+                        <strong>⚠️ Zone dangereuse</strong><br>
+                        Les actions ci-dessous sont irréversibles. Utilisez-les avec précaution.
+                    </div>
+                    
+                    <button onclick="resetAllData()" style="background: #dc3545; color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; width: 100%;">
+                        🗑️ Réinitialisation totale (Nouvelle année scolaire)
+                    </button>
+                    <p style="color: #666; text-align: center; margin-top: 10px; font-size: 0.9em;">
+                        Supprime TOUTES les données : classes, élèves, emplois du temps, fiches de suivi.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // ⚠️ CONFIGURATION FIREBASE - À MODIFIER
+        // ========================================
+        const firebaseConfig = {
+            apiKey: "VOTRE_API_KEY",
+            authDomain: "VOTRE_PROJECT_ID.firebaseapp.com",
+            projectId: "VOTRE_PROJECT_ID",
+            storageBucket: "VOTRE_PROJECT_ID.appspot.com",
+            messagingSenderId: "VOTRE_MESSAGING_SENDER_ID",
+            appId: "VOTRE_APP_ID"
+        };
+
+        // ========================================
+        // ⚠️ EMAIL ADMINISTRATEUR
+        // ========================================
+        const ADMIN_EMAILS = ['collegejeanjaures.sdurand@gmail.com'];
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let classes = [];
+        let currentUserEmail = '';
+
+        // Vérification administrateur
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+            } else {
+                currentUserEmail = user.email;
+                
+                // Vérifier si l'utilisateur est admin
+                if (!ADMIN_EMAILS.includes(currentUserEmail)) {
+                    alert('Accès refusé. Cette page est réservée aux administrateurs.');
+                    window.location.href = 'fichedesuivi.html';
+                    return;
+                }
+                
+                document.getElementById('userInfo').textContent = `🛠️ Admin: ${user.email}`;
+                loadData();
+            }
+        });
+
+        async function logout() {
+            if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+                try {
+                    await auth.signOut();
+                    window.location.href = 'login.html';
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de la déconnexion');
+                }
+            }
+        }
+
+        async function loadData() {
+            try {
+                const doc = await db.collection('fiches_suivi').doc('classes_list').get();
+                if (doc.exists) {
+                    classes = doc.data().classes || [];
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur de chargement des données');
+            }
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            
+            updateStats();
+            renderClassesTable();
+        }
+
+        function updateStats() {
+            document.getElementById('totalClasses').textContent = classes.length;
+            
+            const totalStudents = classes.reduce((sum, cls) => sum + (cls.studentCount || 0), 0);
+            document.getElementById('totalStudents').textContent = totalStudents;
+            
+            const owners = new Set(classes.map(cls => cls.owner).filter(Boolean));
+            document.getElementById('totalOwners').textContent = owners.size;
+            
+            const allCollaborators = new Set();
+            classes.forEach(cls => {
+                if (cls.collaborators) {
+                    cls.collaborators.forEach(c => allCollaborators.add(c));
+                }
+            });
+            document.getElementById('totalCollaborators').textContent = allCollaborators.size;
+        }
+
+        function renderClassesTable() {
+            const tbody = document.getElementById('classesTableBody');
+            
+            if (classes.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px;">
+                            <div class="empty-state-icon">📚</div>
+                            <p>Aucune classe créée pour le moment</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = classes.map((cls, index) => {
+                const createdDate = cls.createdAt ? new Date(cls.createdAt).toLocaleDateString('fr-FR') : 'N/A';
+                const collabCount = cls.collaborators ? cls.collaborators.length : 0;
+                
+                return `
+                    <tr>
+                        <td><strong>${cls.name}</strong></td>
+                        <td>
+                            ${cls.owner ? `
+                                <span class="badge badge-owner">👤 ${cls.owner}</span>
+                            ` : '<em>Aucun propriétaire</em>'}
+                        </td>
+                        <td><strong>${cls.studentCount || 0}</strong> élève(s)</td>
+                        <td><strong>${collabCount}</strong> collaborateur(s)</td>
+                        <td>${createdDate}</td>
+                        <td>
+                            <button class="action-btn btn-view" onclick="goToClass('${cls.file}')">
+                                👁️ Voir
+                            </button>
+                            <button class="action-btn btn-delete" onclick="deleteClass(${index})">
+                                🗑️ Supprimer
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function goToClass(filename) {
+            window.location.href = filename;
+        }
+
+        async function deleteClass(index) {
+            const cls = classes[index];
+            if (confirm(`Êtes-vous sûr de vouloir supprimer la classe "${cls.name}" ?\n\n⚠️ Attention : Cette action est irréversible et supprimera le lien vers cette classe (mais pas le fichier HTML ni les données élèves).`)) {
+                classes.splice(index, 1);
+                
+                try {
+                    await db.collection('fiches_suivi').doc('classes_list').set({
+                        classes: classes,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    updateStats();
+                    renderClassesTable();
+                    alert('Classe supprimée avec succès');
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de la suppression');
+                }
+            }
+        }
+
+        async function resetAllData() {
+            // Première confirmation
+            const confirm1 = confirm(
+                '⚠️ ATTENTION - RÉINITIALISATION TOTALE ⚠️\n\n' +
+                'Cette action va SUPPRIMER DÉFINITIVEMENT :\n' +
+                '• Toutes les classes\n' +
+                '• Tous les élèves\n' +
+                '• Tous les emplois du temps\n' +
+                '• Toutes les fiches de suivi\n' +
+                '• Toutes les données de tracking\n\n' +
+                'Voulez-vous vraiment continuer ?'
+            );
+
+            if (!confirm1) return;
+
+            // Deuxième confirmation
+            const confirm2 = confirm(
+                '🚨 DERNIÈRE CONFIRMATION 🚨\n\n' +
+                'Cette action est IRRÉVERSIBLE.\n' +
+                'TOUTES les données seront PERDUES.\n\n' +
+                'Êtes-vous ABSOLUMENT SÛR de vouloir tout effacer ?'
+            );
+
+            if (!confirm2) return;
+
+            // Troisième confirmation par saisie
+            const confirmText = prompt(
+                'Pour confirmer, tapez exactement :\n' +
+                'SUPPRIMER TOUT\n\n' +
+                '(en majuscules)'
+            );
+
+            if (confirmText !== 'SUPPRIMER TOUT') {
+                alert('Opération annulée. Texte de confirmation incorrect.');
+                return;
+            }
+
+            // Lancer la suppression
+            try {
+                // Afficher un loader
+                document.getElementById('mainContent').innerHTML = `
+                    <div style="text-align: center; padding: 60px;">
+                        <div style="font-size: 3em; margin-bottom: 20px;">🗑️</div>
+                        <h2>Suppression en cours...</h2>
+                        <p>Veuillez patienter, ne fermez pas cette page.</p>
+                        <div class="spinner" style="border: 4px solid #f3f3f3; border-top: 4px solid #dc3545; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 30px auto;"></div>
+                    </div>
+                `;
+
+                // 1. Supprimer la liste des classes
+                await db.collection('fiches_suivi').doc('classes_list').delete();
+                console.log('✅ Liste des classes supprimée');
+
+                // 2. Supprimer toutes les données de classes
+                const classesSnapshot = await db.collection('classes').get();
+                const classesBatch = db.batch();
+                classesSnapshot.docs.forEach(doc => {
+                    classesBatch.delete(doc.ref);
+                });
+                await classesBatch.commit();
+                console.log('✅ Données des classes supprimées');
+
+                // 3. Supprimer toutes les données de tracking
+                const trackingSnapshot = await db.collection('tracking').get();
+                const trackingBatch = db.batch();
+                trackingSnapshot.docs.forEach(doc => {
+                    trackingBatch.delete(doc.ref);
+                });
+                await trackingBatch.commit();
+                console.log('✅ Données de tracking supprimées');
+
+                // Succès
+                document.getElementById('mainContent').innerHTML = `
+                    <div style="text-align: center; padding: 60px;">
+                        <div style="font-size: 5em; margin-bottom: 20px;">✅</div>
+                        <h2 style="color: #28a745;">Réinitialisation réussie !</h2>
+                        <p style="font-size: 1.1em; color: #666; margin: 20px 0;">
+                            Toutes les données ont été supprimées.<br>
+                            Vous pouvez maintenant recommencer une nouvelle année scolaire.
+                        </p>
+                        <button onclick="window.location.reload()" style="background: #667eea; color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 20px;">
+                            🔄 Recharger la page
+                        </button>
+                        <br><br>
+                        <a href="fichedesuivi.html" style="color: #667eea; text-decoration: none; font-weight: bold;">
+                            ← Retour à l'accueil
+                        </a>
+                    </div>
+                `;
+
+                alert('✅ Réinitialisation terminée avec succès !\n\nVous pouvez maintenant créer de nouvelles classes pour la nouvelle année.');
+
+            } catch (error) {
+                console.error('Erreur lors de la suppression:', error);
+                alert('❌ Erreur lors de la suppression : ' + error.message);
+                window.location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

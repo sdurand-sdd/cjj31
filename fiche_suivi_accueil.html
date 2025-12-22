@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiches de Suivi - Accueil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            color: white;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 5px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px;
+        }
+
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .class-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            text-decoration: none;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+        }
+
+        .class-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.3);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+
+        .class-badge.owner {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .class-badge.collaborator {
+            background: #4caf50;
+            color: white;
+        }
+
+        .class-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .class-icon {
+            font-size: 3em;
+        }
+
+        .class-name {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .class-students {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .add-class-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .manage-access-btn {
+            background: #17a2b8;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+        }
+
+        .close-modal {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .collaborators-list {
+            margin: 20px 0;
+        }
+
+        .collaborator-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .collaborator-email {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .add-collaborator-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .info-box h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="user-info" id="userInfo">👤 Chargement...</div>
+            <button class="logout-btn" onclick="logout()">🚪 Déconnexion</button>
+            <h1>🏫 Fiches de Suivi Individuelles</h1>
+            <p>Système de suivi comportemental des élèves</p>
+            <div id="adminButton" style="margin-top: 15px; display: none;">
+                <a href="admin.html" style="background: rgba(255,107,107,0.2); color: white; border: 2px solid #ff6b6b; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">
+                    🛠️ Panneau d'administration
+                </a>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <h3>📘 Comment utiliser ce système ?</h3>
+                <p>
+                    Chaque classe dispose de sa propre page de suivi. Cliquez sur une classe pour accéder à la liste des élèves, 
+                    ajouter de nouveaux élèves, ou consulter leurs fiches de suivi individuelles. 
+                    Les données sont sauvegardées automatiquement pour chaque classe.
+                </p>
+            </div>
+
+            <div class="stats-bar" id="statsBar">
+                <div class="stat-item">
+                    <div class="stat-number" id="classCount">0</div>
+                    <div class="stat-label">Classes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalStudents">0</div>
+                    <div class="stat-label">Élèves suivis</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">Mes Classes</h2>
+            
+            <div class="classes-grid" id="classesGrid">
+                <!-- Les classes seront ajoutées ici -->
+            </div>
+
+            <div class="add-class-section">
+                <h3 style="margin-bottom: 20px; color: #333;">➕ Ajouter une nouvelle classe</h3>
+                <div class="form-group">
+                    <label>Nom de la classe :</label>
+                    <input type="text" id="classNameInput" placeholder="Ex: 6ème 1, 5ème A, 4ème Sciences...">
+                </div>
+                <div class="form-group">
+                    <label>Nom du fichier (sans .html) :</label>
+                    <input type="text" id="classFileInput" placeholder="Ex: 6eme1, 5emeA, 4emeSciences...">
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        Ce nom sera utilisé pour créer le fichier. Exemple: 6eme1 → 6eme1.html
+                    </small>
+                </div>
+                <button onclick="addClass()">Ajouter la classe</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let classes = [];
+
+        async function loadClasses() {
+            try {
+                const result = await window.storage.get('classes_list');
+                if (result) {
+                    classes = JSON.parse(result.value);
+                }
+            } catch (error) {
+                console.log('Première utilisation');
+                classes = [];
+            }
+            renderClasses();
+            updateStats();
+        }
+
+        async function saveClasses() {
+            try {
+                await window.storage.set('classes_list', JSON.stringify(classes));
+            } catch (error) {
+                console.error('Erreur de sauvegarde:', error);
+            }
+        }
+
+        function renderClasses() {
+            const grid = document.getElementById('classesGrid');
+            
+            // Si admin, voir toutes les classes, sinon filtrer
+            const accessibleClasses = isAdmin ? classes : classes.filter(cls => {
+                return cls.owner === currentUserEmail || 
+                       (cls.collaborators && cls.collaborators.includes(currentUserEmail));
+            });
+
+            if (accessibleClasses.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-state-icon">📚</div>
+                        <h3>Aucune classe pour le moment</h3>
+                        <p>Ajoutez votre première classe ci-dessous pour commencer</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = accessibleClasses.map((cls) => {
+                const isOwner = cls.owner === currentUserEmail;
+                let badge = '';
+                
+                if (isAdmin && !isOwner) {
+                    badge = '<div class="class-badge" style="background: #ff6b6b; color: white;">🛠️ Admin</div>';
+                } else if (isOwner) {
+                    badge = '<div class="class-badge owner">👑 Propriétaire</div>';
+                } else {
+                    badge = '<div class="class-badge collaborator">🤝 Collaborateur</div>';
+                }
+                
+                const deleteBtn = (isOwner || isAdmin) ? 
+                    `<button class="delete-btn" onclick="event.stopPropagation(); deleteClass('${cls.file}')">🗑️ Supprimer</button>` : 
+                    '';
+                
+                const manageBtn = (isOwner || isAdmin) ? 
+                    `<button class="manage-access-btn" onclick="event.stopPropagation(); openManageAccessModal('${cls.file}')">📋 Gérer les accès</button>` : 
+                    '';
+
+                return `
+                    <div class="class-card" onclick="goToClass('${cls.file}')">
+                        ${badge}
+                        <div class="class-icon">📖</div>
+                        <div class="class-name">${cls.name}</div>
+                        <div class="class-students">${cls.studentCount || 0} élève(s)</div>
+                        ${manageBtn}
+                        ${deleteBtn}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addClass() {
+            const name = document.getElementById('classNameInput').value.trim();
+            const file = document.getElementById('classFileInput').value.trim();
+
+            if (!name || !file) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
+
+            // Vérifier que le fichier ne contient pas de caractères interdits
+            if (!/^[a-zA-Z0-9_-]+$/.test(file)) {
+                alert('Le nom du fichier ne doit contenir que des lettres, chiffres, tirets et underscores');
+                return;
+            }
+
+            classes.push({
+                name: name,
+                file: file + '.html',
+                studentCount: 0,
+                createdAt: new Date().toISOString()
+            });
+
+            saveClasses();
+            renderClasses();
+            updateStats();
+
+            document.getElementById('classNameInput').value = '';
+            document.getElementById('classFileInput').value = '';
+
+            alert(`Classe "${name}" ajoutée !\n\nCréez maintenant le fichier "${file}.html" en copiant le modèle de classe fourni.`);
+        }
+
+        function deleteClass(index) {
+            if (confirm(`Êtes-vous sûr de vouloir supprimer la classe "${classes[index].name}" ?\n\nAttention : cela ne supprimera pas le fichier HTML, uniquement le lien depuis cette page.`)) {
+                classes.splice(index, 1);
+                saveClasses();
+                renderClasses();
+                updateStats();
+            }
+        }
+
+        function goToClass(filename) {
+            window.location.href = filename;
+        }
+
+        function updateStats() {
+            // Si admin, voir toutes les classes, sinon filtrer
+            const accessibleClasses = isAdmin ? classes : classes.filter(cls => {
+                return cls.owner === currentUserEmail || 
+                       (cls.collaborators && cls.collaborators.includes(currentUserEmail));
+            });
+            
+            document.getElementById('classCount').textContent = accessibleClasses.length;
+            const totalStudents = accessibleClasses.reduce((sum, cls) => sum + (cls.studentCount || 0), 0);
+            document.getElementById('totalStudents').textContent = totalStudents;
+        }
+
+        // Ne pas charger automatiquement au démarrage (géré par onAuthStateChanged)
+    </script>
+</body>
+</html>
