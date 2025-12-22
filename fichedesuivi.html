@@ -304,8 +304,7 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-// TEST TEMPORAIRE : On force la connexion pour voir si les données arrivent
-auth.signInWithEmailAndPassword("profcollege@gmail.com", "ep4eme4");
+
         
         // On écoute l'état de connexion
 auth.onAuthStateChanged((user) => {
@@ -327,6 +326,8 @@ auth.onAuthStateChanged((user) => {
         // window.location.href = "index.html"; 
     }
 });
+        auth.signInWithEmailAndPassword("profcollege@gmail.com", "ep4eme4")
+    .catch(error => console.error("Erreur de login:", error.message));
 
         // ========================================
         // CODE DE L'APPLICATION
