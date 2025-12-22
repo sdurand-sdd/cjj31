@@ -846,6 +846,14 @@
                 appId: "1:1088897454236:web:9d2f1f5e25532e93605d59" // Vérifiez si celui-ci est le nouveau
   };
 
+        // Initialisation classique
+          firebase.initializeApp(firebaseConfig);
+  
+        // Nos outils pour cette page
+          const db = firebase.firestore(); // On utilise FIRESTORE ici
+          const auth = firebase.auth();
+
+        
         // ⚠️ IDENTIFIANT CLASSE - À MODIFIER
         const CLASS_ID = "4eme5";
         const CLASS_NAME = "4ème 5";
