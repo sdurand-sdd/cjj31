@@ -304,6 +304,27 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
+        // On écoute l'état de connexion
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        // L'utilisateur est connecté !
+        console.log("Utilisateur identifié :", user.email);
+        
+        // On vérifie si l'email fait partie des deux autorisés par vos règles Firestore
+        if (user.email === "sophie.durand@free.fr" || user.email === "profcollege@gmail.com") {
+            loadClasses(); // MAINTENANT on peut charger les données sans erreur
+        } else {
+            alert("Accès refusé : cet email n'a pas les droits nécessaires.");
+            auth.signOut(); // On le déconnecte car il n'a rien à faire ici
+        }
+    } else {
+        // Personne n'est connecté
+        console.log("Aucun utilisateur connecté. Redirection...");
+        // Optionnel : rediriger vers votre page de login
+        // window.location.href = "index.html"; 
+    }
+});
+
         // ========================================
         // CODE DE L'APPLICATION
         // ========================================
