@@ -1456,51 +1456,63 @@ async function saveTrackingData(data) {
     }
 }
                 
-        function getAllItems() {
-            const s = students.find(st => st.id === currentStudentId);
-            return [...classItems, ...(s.specificItems || [])];
-        }
+function getAllItems() {
+    const s = students.find(st => st.id === currentStudentId);
+    return [...classItems, ...(s.specificItems || [])];
+}
 
-        function renderSchedule() {
-            const student = students.find(s => s.id === currentStudentId);
-            if (!student) return;
-
-            const weekType = getWeekType(currentWeek);
-            const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
-            const allItems = getAllItems();
-            
-            document.getElementById('weekType').textContent = `Semaine ${weekType}`;
-            document.getElementById('weekType').className = `week-type semaine-${weekType.toLowerCase()}`;
-            document.getElementById('weekDates').textContent = getWeekDateRange();
-
-            const grid = document.getElementById('scheduleGrid');
-            grid.innerHTML = '<div class="grid-cell grid-header"></div>';
-            days.forEach(d => grid.innerHTML += `<div class="grid-cell grid-header">${d}</div>`);
-
-            slots.forEach(slot => {
-                grid.innerHTML += `<div class="grid-cell time-slot">${slot}<br>${slotLabels[slot]}</div>`;
-                days.forEach(day => {
-                    const key = `${day}-${slot}`;
-                    const subj = schedule[key];
-                    if (subj) {
-                        let html = `<div class="grid-cell subject-cell"><div class="subject-name" style="background:${subj.color};">${subj.subject}</div>`;
-                        .item-label
-                      const btns = [];
-                        if (item.type === 'both' || item.type === 'negative') 
-                            btns.push(`<button class="track-btn" id="btn-${key}-${item.id}--1" onclick="toggleTracking('${key}','${item.id}',-1)">-1</button>`);
-                        if (item.type === 'both' || item.type === 'positive') 
-                            btns.push(`<button class="track-btn" id="btn-${key}-${item.id}-1" onclick="toggleTracking('${key}','${item.id}',1)">+1</button>`);
-                        html += `<div class="tracking-row">
-                            <span class="item-label">${item.emoji} ${item.name}</span>
-                            <div class="tracking-buttons">${btns.join('')}</div>
+function renderSchedule() {
+    const student = students.find(s => s.id === currentStudentId);
+    if (!student) return;
+    
+    const weekType = getWeekType(currentWeek);
+    const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
+    const allItems = getAllItems();
+    
+    document.getElementById('weekType').textContent = `Semaine ${weekType}`;
+    document.getElementById('weekType').className = `week-type semaine-${weekType.toLowerCase()}`;
+    document.getElementById('weekDates').textContent = getWeekDateRange();
+    
+    const grid = document.getElementById('scheduleGrid');
+    grid.innerHTML = '<div class="grid-cell grid-header"></div>';
+    days.forEach(d => grid.innerHTML += `<div class="grid-cell grid-header">${d}</div>`);
+    
+    slots.forEach(slot => {
+        grid.innerHTML += `<div class="grid-cell time-slot">${slot}<br>${slotLabels[slot]}</div>`;
+        days.forEach(day => {
+            const key = `${day}-${slot}`;
+            const subj = schedule[key];
+            if (subj) {
+                let html = `<div class="grid-cell subject-cell"><div class="subject-name" style="background:${subj.color};">${subj.subject}</div>`;
+                
+                // ✅ BOUCLE SUR LES ITEMS
+                allItems.forEach(item => {
+                    const btns = [];
+                    if (item.type === 'both' || item.type === 'negative') 
+                        btns.push(`<button class="track-btn" id="btn-${key}-${item.id}--1" onclick="toggleTracking('${key}','${item.id}',-1)">-1</button>`);
+                    if (item.type === 'both' || item.type === 'positive') 
+                        btns.push(`<button class="track-btn" id="btn-${key}-${item.id}-1" onclick="toggleTracking('${key}','${item.id}',1)">+1</button>`);
+                    
+                    html += `<div class="tracking-row">
+                        <span class="item-label">${item.emoji} ${item.name}</span>
+                        <div class="tracking-buttons">${btns.join('')}</div>
                     </div>`;
-});
-                        grid.innerHTML += html + '</div>';
-                    } else {
-                        grid.innerHTML += '<div class="grid-cell empty-cell"></div>';
-                    }
                 });
-            });
+                
+                grid.innerHTML += html + '</div>';
+            } else {
+                grid.innerHTML += '<div class="grid-cell empty-cell"></div>';
+            }
+        });
+    });
+    
+    grid.innerHTML += '<div class="grid-cell total-row grid-header">TOTAL</div>';
+    days.forEach(d => grid.innerHTML += `<div class="grid-cell total-row" id="total-${d}"></div>`);
+    
+    updateButtonStates();
+    renderWeekStats();
+    updateDayTotals();
+}
 
             grid.innerHTML += '<div class="grid-cell total-row grid-header">TOTAL</div>';
             days.forEach(d => grid.innerHTML += `<div class="grid-cell total-row" id="total-${d}"></div>`);
