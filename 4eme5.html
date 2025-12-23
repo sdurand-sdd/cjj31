@@ -890,20 +890,30 @@
         // ========================================
         // VÉRIFICATION AUTHENTIFICATION
         // ========================================
-        auth.onAuthStateChanged((user) => {
+// ✅ UN SEUL onAuthStateChanged
+auth.onAuthStateChanged((user) => {
     if (!user) {
         window.location.href = 'login.html';
     } else {
         currentUserEmail = user.email;
-        isAdmin = (currentUserEmail === 'collegejeanjaures.sdurand@gmail.com');  // ← Solution temporaire
+        
+        // Vérifications admin/owner
+        isOwner = OWNER_EMAIL === currentUserEmail;
+        isAdmin = ADMIN_EMAILS.includes(currentUserEmail);
+        
         console.log('currentUserEmail:', currentUserEmail);
+        console.log('isOwner:', isOwner);
         console.log('isAdmin:', isAdmin);
+        
         document.getElementById('userInfo').textContent = `👤 ${user.email}`;
+        
+        updateActionButtons();  // ✅ Mise à jour des boutons
+        
         loadStudents();
     }
 });
 
-        // ✅ AJOUTER CE CODE JAVASCRIPT
+// ✅ Fonction pour afficher/cacher les boutons admin
 function updateActionButtons() {
     const actionButtonsDiv = document.getElementById('actionButtons');
     
@@ -916,19 +926,6 @@ function updateActionButtons() {
         actionButtonsDiv.innerHTML = '';
     }
 }
-
-// Appelez cette fonction après avoir défini isOwner et isAdmin
-auth.onAuthStateChanged(user => {
-    if (user) {
-        currentUserEmail = user.email;
-        isOwner = OWNER_EMAIL === currentUserEmail;
-        isAdmin = ADMIN_EMAILS.includes(currentUserEmail);
-        
-        updateActionButtons(); // ✅ AJOUTER CETTE LIGNE
-        
-        loadStudents();
-    }
-});
         
         // Fonction de déconnexion
         async function logout() {
