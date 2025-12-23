@@ -4,12 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Classe - Fiches de Suivi</title>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    
+  
+  
     <style>
         * {
             margin: 0;
@@ -420,25 +416,33 @@
         }
 
         .subject-colors {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
             margin-top: 10px;
         }
-
-        .color-option {
-            padding: 10px;
-            border-radius: 5px;
-            color: white;
-            text-align: center;
-            cursor: pointer;
-            border: 3px solid transparent;
+        .color-picker {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 10px 0;
         }
-
-        .color-option.selected {
+        .color-option {
+            width: 40px;
+            height: 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .color-option:hover {
+            transform: scale(1.1);
             border-color: #333;
         }
-
+        .color-option.selected {
+            border-color: #333;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #333;
+        }
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -627,6 +631,29 @@
             border-color: #333;
             transform: scale(1.05);
         }
+        .item-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+            min-width: 120px; /* Pour aligner les boutons */
+        }
+
+        .tracking-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+        }
+
+        .tracking-buttons {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0; /* Empêche les boutons de rétrécir */
+        }
+        
     </style>
 </head>
 <body>
@@ -677,10 +704,8 @@
                 <div class="stats-summary" id="weekStats"></div>
                 <div class="schedule-grid" id="scheduleGrid"></div>
 
-                <div class="action-buttons">
-                    ${(isOwner || isAdmin) ? '<button class="btn-secondary" onclick="openScheduleModal()">📅 Emploi du temps</button>' : ''}
-                    ${(isOwner || isAdmin) ? '<button class="btn-secondary" onclick="openStudentItemsModal()">⚙️ Items spécifiques</button>' : ''}
-                </div>
+               <!-- ✅ METTRE CECI DANS LE HTML -->
+                <div class="action-buttons" id="actionButtons"></div>
             </div>
         </div>
     </div>
@@ -805,65 +830,93 @@
     </div>
 
     <div class="modal" id="scheduleModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Emploi du temps</h2>
-                <button class="close-modal" onclick="closeModal('scheduleModal')">✕</button>
-            </div>
-            <div class="info-banner"><strong>📅</strong> Semaines A et B (quinzaine)</div>
-            <div class="form-group">
-                <label>Semaine :</label>
-                <div class="week-selector">
-                    <div class="week-option semaine-a selected" data-week="A" onclick="selectScheduleWeek(this)">Semaine A</div>
-                    <div class="week-option semaine-b" data-week="B" onclick="selectScheduleWeek(this)">Semaine B</div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Jour :</label>
-                <select id="daySelect">
-                    <option value="Lundi">Lundi</option>
-                    <option value="Mardi">Mardi</option>
-                    <option value="Mercredi">Mercredi</option>
-                    <option value="Jeudi">Jeudi</option>
-                    <option value="Vendredi">Vendredi</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Créneau :</label>
-                <select id="slotSelect">
-                    <option value="M1">M1 (8h30-9h25)</option>
-                    <option value="M2">M2 (9h30-10h25)</option>
-                    <option value="M3">M3 (10h40-11h35)</option>
-                    <option value="M4">M4 (11h40-12h35)</option>
-                    <option value="S0">S0 (12h55-13h50)</option>
-                    <option value="S1">S1 (13h55-14h50)</option>
-                    <option value="S2">S2 (15h05-16h00)</option>
-                    <option value="S3">S3 (16h05-17h00)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Matière :</label>
-                <input type="text" id="subjectInput" placeholder="Ex: Mathématiques">
-            </div>
-            <div class="form-group">
-                <label>Couleur :</label>
-                <div class="subject-colors">
-                    <div class="color-option selected" style="background: #3498db;" data-color="#3498db">Bleu</div>
-                    <div class="color-option" style="background: #e74c3c;" data-color="#e74c3c">Rouge</div>
-                    <div class="color-option" style="background: #2ecc71;" data-color="#2ecc71">Vert</div>
-                    <div class="color-option" style="background: #f39c12;" data-color="#f39c12">Orange</div>
-                    <div class="color-option" style="background: #9b59b6;" data-color="#9b59b6">Violet</div>
-                    <div class="color-option" style="background: #1abc9c;" data-color="#1abc9c">Turquoise</div>
-                    <div class="color-option" style="background: #e91e63;" data-color="#e91e63">Rose</div>
-                    <div class="color-option" style="background: #ff5722;" data-color="#ff5722">Orange F</div>
-                    <div class="color-option" style="background: #607d8b;" data-color="#607d8b">Gris</div>
-                </div>
-            </div>
+    <div class="modal-content">
+        <h2>📅 Ajouter une matière</h2>
+        
+        <!-- Sélection semaine -->
+        <div class="week-selector">
+            <div class="week-option selected" data-week="A" onclick="selectScheduleWeek(this)">Semaine A</div>
+            <div class="week-option" data-week="B" onclick="selectScheduleWeek(this)">Semaine B</div>
+        </div>
+        
+        <!-- Sélection jour -->
+        <label>Jour :</label>
+        <select id="daySelect">
+            <option value="Lundi">Lundi</option>
+            <option value="Mardi">Mardi</option>
+            <option value="Mercredi">Mercredi</option>
+            <option value="Jeudi">Jeudi</option>
+            <option value="Vendredi">Vendredi</option>
+        </select>
+        
+        <!-- Sélection créneau -->
+        <label>Créneau :</label>
+        <select id="slotSelect">
+            <option value="M1">M1 (8h30-9h25)</option>
+            <option value="M2">M2 (9h30-10h25)</option>
+            <option value="M3">M3 (10h40-11h35)</option>
+            <option value="M4">M4 (11h40-12h35)</option>
+            <option value="S0">S0 (12h55-13h50)</option>
+            <option value="S1">S1 (13h55-14h50)</option>
+            <option value="S2">S2 (15h05-16h00)</option>
+            <option value="S3">S3 (16h05-17h00)</option>
+        </select>
+        
+        <!-- ✅ NOUVEAU : Liste déroulante de matières -->
+        <label>Matière :</label>
+        <select id="subjectSelect" onchange="handleSubjectChange()">
+            <option value="Mathématiques">📐 Mathématiques</option>
+            <option value="Français">📚 Français</option>
+            <option value="Histoire-Géo">🌍 Histoire-Géo</option>
+            <option value="Anglais">🇬🇧 Anglais</option>
+            <option value="Espagnol">🇪🇸 Espagnol</option>
+            <option value="Allemand">🇩🇪 Allemand</option>
+            <option value="Chinois">🇨🇳 Chinois</option>
+            <option value="Italien">🇮🇹 Italien</option>
+            <option value="SVT">🧬 SVT</option>
+            <option value="Physique-Chimie">⚗️ Physique-Chimie</option>
+            <option value="Technologie">🔧 Technologie</option>
+            <option value="EPS">⚽ EPS</option>
+            <option value="Arts Plastiques">🎨 Arts Plastiques</option>
+            <option value="Musique">🎵 Musique</option>
+            <option value="Vie de classe">👥 Vie de classe</option>
+            <option value="Permanence">📖 Permanence</option>
+            <option value="Autre">✏️ Autre (personnalisé)</option>
+        </select>
+        
+        <!-- ✅ NOUVEAU : Champ personnalisé (masqué par défaut) -->
+        <div id="customSubjectDiv" style="display: none;">
+            <label>Nom personnalisé :</label>
+            <input type="text" id="customSubjectInput" placeholder="Ex: Accompagnement personnalisé">
+        </div>
+        
+        <!-- Sélection couleur (automatique maintenant) -->
+        <label>Couleur : <span id="colorPreview" style="display: inline-block; width: 20px; height: 20px; border-radius: 3px; margin-left: 10px;"></span></label>
+        <div class="color-picker" id="colorPickerSchedule">
+            <div class="color-option" data-color="#3498db" style="background: #3498db;"></div>
+            <div class="color-option" data-color="#e74c3c" style="background: #e74c3c;"></div>
+            <div class="color-option" data-color="#f39c12" style="background: #f39c12;"></div>
+            <div class="color-option" data-color="#9b59b6" style="background: #9b59b6;"></div>
+            <div class="color-option" data-color="#27ae60" style="background: #27ae60;"></div>
+            <div class="color-option" data-color="#16a085" style="background: #16a085;"></div>
+            <div class="color-option" data-color="#34495e" style="background: #34495e;"></div>
+            <div class="color-option" data-color="#95a5a6" style="background: #95a5a6;"></div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
             <button class="btn-primary" onclick="addSubjectToSchedule()">Ajouter</button>
+            <button class="btn-secondary" onclick="closeModal('scheduleModal')">Annuler</button>
         </div>
     </div>
+</div>
 
-    <script>
+    <script type="module">
+         // Imports Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+        
         // ⚠️ CONFIGURATION FIREBASE - À MODIFIER
         const firebaseConfig = {
           apiKey: "AIzaSyA4BpxaadwjKgiJH3rwOdk3WaJ9m5G9qqw",
@@ -874,7 +927,16 @@
           messagingSenderId: "1088897454236",
           appId: "1:1088897454236:web:9d2f1f5e25532e93605d59"
 };
+        // ✅ AJOUTER CES LIGNES ICI
+        const OWNER_EMAIL = 'collegejeanjaures.sdurand@gmail.com';
+        const ADMIN_EMAILS = ['collegejeanjaures.sdurand@gmail.com'];
 
+       // Initialisation Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+     
         // ⚠️ IDENTIFIANT CLASSE - À MODIFIER
         const CLASS_ID = "4eme4";
         const CLASS_NAME = "4ème 4";
@@ -882,29 +944,47 @@
         // ⚠️ DATE DÉBUT ANNÉE SCOLAIRE - À MODIFIER
         // Format: "YYYY-MM-DD" - Premier jour de la rentrée
         const SCHOOL_YEAR_START = "2025-09-01"; // Exemple: 2 septembre 2025
-
-        const ADMIN_EMAILS = ['collegejeanjaures.sdurand@gmail.com'];
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-
+    
         // ========================================
         // VÉRIFICATION AUTHENTIFICATION
         // ========================================
-        auth.onAuthStateChanged((user) => {
-            if (!user) {
-                // Pas connecté, rediriger vers la page de connexion
-                window.location.href = 'login.html';
-            } else {
-                // Afficher l'email de l'utilisateur
-                currentUserEmail = user.email;
-                document.getElementById('userInfo').textContent = `👤 ${user.email}`;
-                // Charger les données
-                loadStudents();
-            }
-        });
+// ✅ UN SEUL onAuthStateChanged
+auth.onAuthStateChanged((user) => {
+    if (!user) {
+        window.location.href = 'login.html';
+    } else {
+        currentUserEmail = user.email;
+        
+        // Vérifications admin/owner
+        isOwner = OWNER_EMAIL === currentUserEmail;
+        isAdmin = ADMIN_EMAILS.includes(currentUserEmail);
+        
+        console.log('currentUserEmail:', currentUserEmail);
+        console.log('isOwner:', isOwner);
+        console.log('isAdmin:', isAdmin);
+        
+        document.getElementById('userInfo').textContent = `👤 ${user.email}`;
+        
+        updateActionButtons();  // ✅ Mise à jour des boutons
+        
+        loadStudents();
+    }
+});
 
+// ✅ Fonction pour afficher/cacher les boutons admin
+function updateActionButtons() {
+    const actionButtonsDiv = document.getElementById('actionButtons');
+    
+    if (isOwner || isAdmin) {
+        actionButtonsDiv.innerHTML = `
+            <button class="btn-secondary" onclick="openScheduleModal()">📅 Emploi du temps</button>
+            <button class="btn-secondary" onclick="openStudentItemsModal()">⚙️ Items spécifiques</button>
+        `;
+    } else {
+        actionButtonsDiv.innerHTML = '';
+    }
+}
+        
         // Fonction de déconnexion
         async function logout() {
             if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
@@ -939,6 +1019,24 @@
             'S0': '12h55-13h50', 'S1': '13h55-14h50', 'S2': '15h05-16h00', 'S3': '16h05-17h00'
         };
 
+        // ✅ AJOUTER CES MATIÈRES PRÉDÉFINIES
+        const predefinedSubjects = {
+        'Mathématiques': '#3498db',
+        'Français': '#e74c3c',
+        'Histoire-Géo': '#f39c12',
+        'Anglais': '#9b59b6',
+        'Espagnol': '#e67e22',
+        'Allemand': '#1abc9c',
+        'SVT': '#27ae60',
+        'Physique-Chimie': '#16a085',
+        'Technologie': '#34495e',
+        'EPS': '#2ecc71',
+        'Arts Plastiques': '#ff6b9d',
+        'Musique': '#8e44ad',
+        'Vie de classe': '#95a5a6',
+        'Permanence': '#bdc3c7',
+        'Autre': '#7f8c8d'
+};
         // Calcul semaine A/B
         function getWeekType(weekOffset = 0) {
             const startDate = new Date(SCHOOL_YEAR_START);
@@ -1004,55 +1102,51 @@
             selectedScheduleWeek = el.dataset.week;
         }
 
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
+       
+async function loadStudents() {
+    try {
+        // ✅ Charger le document de la classe
+        const classRef = doc(db, 'classes', CLASS_ID);
+        const classDoc = await getDoc(classRef);
+        
+        if (classDoc.exists()) {
+            const data = classDoc.data();
+            students = data.students || [];
+            classItems = data.classItems || [];
+        } else {
+            students = [];
+            classItems = [];
+            // Créer le document s'il n'existe pas
+            await setDoc(classRef, {
+                students: [],
+                classItems: [],
+                className: CLASS_NAME,
+                createdAt: new Date()
+            });
         }
-
-        async function loadStudents() {
-            try {
-                const doc = await db.collection('classes').doc(CLASS_ID).get();
-                if (doc.exists) {
-                    const data = doc.data();
-                    students = data.students || [];
-                    classItems = data.classItems || [];
-                    
-                    // Vérifier si admin
-                    isAdmin = ADMIN_EMAILS.includes(currentUserEmail);
-                    
-                    // Vérifier les permissions
-                    const owner = data.owner;
-                    const collaborators = data.collaborators || [];
-                    
-                    isOwner = (owner === currentUserEmail);
-                    const isCollaborator = collaborators.includes(currentUserEmail);
-                    
-                    if (!isOwner && !isCollaborator && !isAdmin) {
-                        alert('Vous n\'avez pas accès à cette classe.');
-                        window.location.href = 'fichedesuivi.html';
-                        return;
-                    }
-                    
-                    // Afficher le rôle
-                    if (isAdmin && !isOwner) {
-                        document.getElementById('className').innerHTML = `${CLASS_NAME} <span style="background: #ff6b6b; color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.7em;">🛠️ Admin</span>`;
-                    } else if (isOwner) {
-                        document.getElementById('className').innerHTML = `${CLASS_NAME} <span style="background: #ffd700; color: #333; padding: 3px 8px; border-radius: 5px; font-size: 0.7em;">👑 Propriétaire</span>`;
-                    } else {
-                        document.getElementById('className').innerHTML = `${CLASS_NAME} <span style="background: #4caf50; color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.7em;">🤝 Collaborateur</span>`;
-                    }
-                    
-                    // Masquer les boutons de modification si collaborateur (mais pas si admin)
-                    if (!isOwner && !isAdmin) {
-                        hideOwnerOnlyButtons();
-                    }
-                }
-            } catch (error) {
-                console.error('Erreur:', error);
-                alert('Erreur Firebase. Vérifiez la configuration.');
-            }
-            
-            renderStudentsList();
+        
+        // ✅ Afficher le rôle
+        if (isAdmin && !isOwner) {
+            document.getElementById('className').innerHTML = `${CLASS_NAME} <span style="background: #ff6b6b; color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.7em;">🛠️ Admin</span>`;
+        } else if (isOwner) {
+            document.getElementById('className').innerHTML = `${CLASS_NAME} <span style="background: #ffd700; color: #333; padding: 3px 8px; border-radius: 5px; font-size: 0.7em;">👑 Propriétaire</span>`;
+        } else {
+            document.getElementById('className').innerHTML = `${CLASS_NAME} <span style="background: #4caf50; color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.7em;">🤝 Collaborateur</span>`;
         }
+        
+        // ✅ Masquer les boutons si collaborateur
+        if (!isOwner && !isAdmin) {
+            hideOwnerOnlyButtons();
+        }
+        
+        // ✅ Afficher la liste
+        renderStudentsList();
+        
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors du chargement des élèves');
+    }
+}
 
         function hideOwnerOnlyButtons() {
             // Masquer les boutons réservés au propriétaire
@@ -1065,19 +1159,20 @@
             });
         }
 
-        async function saveClassData() {
-            try {
-                await db.collection('classes').doc(CLASS_ID).set({
-                    students: students,
-                    classItems: classItems,
-                    className: CLASS_NAME,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            } catch (error) {
-                console.error('Erreur:', error);
-                alert('Erreur de sauvegarde');
-            }
-        }
+      async function saveClassData() {
+    try {
+        const classRef = doc(db, 'classes', CLASS_ID);
+        await setDoc(classRef, {
+            students: students,
+            classItems: classItems,
+            className: CLASS_NAME,
+            updatedAt: new Date()
+        }, { merge: true }); // ✅ merge: true crée le doc s'il n'existe pas
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur de sauvegarde');
+    }
+}
 
         function openClassItemsModal() {
             if (!isOwner && !isAdmin) {
@@ -1229,23 +1324,26 @@
             closeModal('addStudentModal');
             document.getElementById('newStudentName').value = '';
         }
-
-        async function deleteStudent(id) {
-            if (!isOwner && !isAdmin) {
-                alert('Seul le propriétaire ou un administrateur peut supprimer des élèves.');
-                return;
-            }
-            const s = students.find(st => st.id === id);
-            if (confirm(`Supprimer ${s.name} ?`)) {
-                students = students.filter(st => st.id !== id);
-                try {
-                    await db.collection('tracking').doc(`${CLASS_ID}_${id}`).delete();
-                } catch (e) {}
-                await saveClassData();
-                renderStudentsList();
-            }
+ function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
         }
-
+            
+        async function deleteStudent(id) {
+    if (!isOwner && !isAdmin) {
+        alert('Seul le propriétaire ou un administrateur peut supprimer des élèves.');
+        return;
+    }
+    const s = students.find(st => st.id === id);
+    if (confirm(`Supprimer ${s.name} ?`)) {
+        students = students.filter(st => st.id !== id);
+        try {
+            const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${id}`);
+            await deleteDoc(trackingRef);
+        } catch (e) {}
+        await saveClassData();
+        renderStudentsList();
+    }
+}
         function openStudentTracking(id) {
             currentStudentId = id;
             const s = students.find(st => st.id === id);
@@ -1269,126 +1367,181 @@
             document.getElementById('scheduleModal').classList.add('active');
         }
 
-        async function addSubjectToSchedule() {
-            const day = document.getElementById('daySelect').value;
-            const slot = document.getElementById('slotSelect').value;
-            const subject = document.getElementById('subjectInput').value.trim();
-            if (!subject) return alert('Entrez une matière');
-            
-            const student = students.find(s => s.id === currentStudentId);
-            const scheduleKey = selectedScheduleWeek === 'A' ? 'scheduleA' : 'scheduleB';
-            if (!student[scheduleKey]) student[scheduleKey] = {};
-            
-            student[scheduleKey][`${day}-${slot}`] = {
-                subject: subject,
-                color: selectedColor
-            };
-            
-            await saveClassData();
-            renderSchedule();
-            alert('Matière ajoutée !');
-            document.getElementById('subjectInput').value = '';
+// ✅ NOUVELLE FONCTION : Gérer le changement de matière
+function handleSubjectChange() {
+    const select = document.getElementById('subjectSelect');
+    const customDiv = document.getElementById('customSubjectDiv');
+    const colorPreview = document.getElementById('colorPreview');
+    const selectedSubject = select.value;
+    
+    // Afficher/masquer le champ personnalisé
+    if (selectedSubject === 'Autre') {
+        customDiv.style.display = 'block';
+        selectedColor = '#7f8c8d'; // Couleur par défaut pour "Autre"
+    } else {
+        customDiv.style.display = 'none';
+        // Appliquer la couleur prédéfinie
+        if (predefinedSubjects[selectedSubject]) {
+            selectedColor = predefinedSubjects[selectedSubject];
         }
-
-        async function getTrackingData() {
-            try {
-                const doc = await db.collection('tracking').doc(`${CLASS_ID}_${currentStudentId}`).get();
-                return doc.exists ? doc.data() : {};
-            } catch (e) {
-                return {};
-            }
+    }
+    
+    // Mettre à jour l'aperçu de couleur
+    colorPreview.style.background = selectedColor;
+    
+    // Mettre à jour la sélection visuelle dans le color picker
+    document.querySelectorAll('#colorPickerSchedule .color-option').forEach(opt => {
+        opt.classList.remove('selected');
+        if (opt.dataset.color === selectedColor) {
+            opt.classList.add('selected');
         }
+    });
+}
 
-        async function saveTrackingData(data) {
-            try {
-                await db.collection('tracking').doc(`${CLASS_ID}_${currentStudentId}`).set({
-                    ...data,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+// ✅ MODIFIER addSubjectToSchedule()
+async function addSubjectToSchedule() {
+    const day = document.getElementById('daySelect').value;
+    const slot = document.getElementById('slotSelect').value;
+    const subjectSelect = document.getElementById('subjectSelect').value;
+    
+    // Déterminer le nom de la matière
+    let subjectName;
+    if (subjectSelect === 'Autre') {
+        subjectName = document.getElementById('customSubjectInput').value.trim();
+        if (!subjectName) return alert('Entrez un nom de matière personnalisé');
+    } else if (subjectSelect === '') {
+        return alert('Choisissez une matière');
+    } else {
+        subjectName = subjectSelect;
+    }
+    
+    const student = students.find(s => s.id === currentStudentId);
+    const scheduleKey = selectedScheduleWeek === 'A' ? 'scheduleA' : 'scheduleB';
+    if (!student[scheduleKey]) student[scheduleKey] = {};
+    
+    student[scheduleKey][`${day}-${slot}`] = {
+        subject: subjectName,
+        color: selectedColor
+    };
+    
+    await saveClassData();
+    renderSchedule();
+    alert('Matière ajoutée !');
+    
+    // Réinitialiser le formulaire
+    document.getElementById('subjectSelect').value = '';
+    document.getElementById('customSubjectInput').value = '';
+    document.getElementById('customSubjectDiv').style.display = 'none';
+}
+
+async function getTrackingData() {
+    try {
+        const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${currentStudentId}`);
+        const docSnap = await getDoc(trackingRef);
+        return docSnap.exists() ? docSnap.data() : {};
+    } catch (e) {
+        return {};
+    }
+}
+
+async function saveTrackingData(data) {
+    try {
+        const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${currentStudentId}`);
+        await setDoc(trackingRef, {
+            ...data,
+            updatedAt: new Date()
+        });
+    } catch (e) {
+        console.error('Erreur:', e);
+    }
+}
+                
+function getAllItems() {
+    const s = students.find(st => st.id === currentStudentId);
+    return [...classItems, ...(s.specificItems || [])];
+}
+
+function renderSchedule() {
+    const student = students.find(s => s.id === currentStudentId);
+    if (!student) return;
+    
+    const weekType = getWeekType(currentWeek);
+    const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
+    const allItems = getAllItems();
+    
+    document.getElementById('weekType').textContent = `Semaine ${weekType}`;
+    document.getElementById('weekType').className = `week-type semaine-${weekType.toLowerCase()}`;
+    document.getElementById('weekDates').textContent = getWeekDateRange();
+    
+    const grid = document.getElementById('scheduleGrid');
+    grid.innerHTML = '<div class="grid-cell grid-header"></div>';
+    days.forEach(d => grid.innerHTML += `<div class="grid-cell grid-header">${d}</div>`);
+    
+    slots.forEach(slot => {
+        grid.innerHTML += `<div class="grid-cell time-slot">${slot}<br>${slotLabels[slot]}</div>`;
+        days.forEach(day => {
+            const key = `${day}-${slot}`;
+            const subj = schedule[key];
+            if (subj) {
+                let html = `<div class="grid-cell subject-cell"><div class="subject-name" style="background:${subj.color};">${subj.subject}</div>`;
+                
+                allItems.forEach(item => {
+                    const btns = [];
+                    if (item.type === 'both' || item.type === 'negative') 
+                        btns.push(`<button class="track-btn" id="btn-${key}-${item.id}--1" onclick="toggleTracking('${key}','${item.id}',-1)">-1</button>`);
+                    if (item.type === 'both' || item.type === 'positive') 
+                        btns.push(`<button class="track-btn" id="btn-${key}-${item.id}-1" onclick="toggleTracking('${key}','${item.id}',1)">+1</button>`);
+                    
+                    html += `<div class="tracking-row">
+                        <span class="item-label">${item.emoji} ${item.name}</span>
+                        <div class="tracking-buttons">${btns.join('')}</div>
+                    </div>`;
                 });
-            } catch (e) {
-                console.error('Erreur:', e);
+                
+                grid.innerHTML += html + '</div>';
+            } else {
+                grid.innerHTML += '<div class="grid-cell empty-cell"></div>';
             }
-        }
-
-        function getAllItems() {
-            const s = students.find(st => st.id === currentStudentId);
-            return [...classItems, ...(s.specificItems || [])];
-        }
-
-        function renderSchedule() {
-            const student = students.find(s => s.id === currentStudentId);
-            if (!student) return;
-
-            const weekType = getWeekType(currentWeek);
-            const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
-            const allItems = getAllItems();
-            
-            document.getElementById('weekType').textContent = `Semaine ${weekType}`;
-            document.getElementById('weekType').className = `week-type semaine-${weekType.toLowerCase()}`;
-            document.getElementById('weekDates').textContent = getWeekDateRange();
-
-            const grid = document.getElementById('scheduleGrid');
-            grid.innerHTML = '<div class="grid-cell grid-header"></div>';
-            days.forEach(d => grid.innerHTML += `<div class="grid-cell grid-header">${d}</div>`);
-
-            slots.forEach(slot => {
-                grid.innerHTML += `<div class="grid-cell time-slot">${slot}<br>${slotLabels[slot]}</div>`;
-                days.forEach(day => {
-                    const key = `${day}-${slot}`;
-                    const subj = schedule[key];
-                    if (subj) {
-                        let html = `<div class="grid-cell subject-cell"><div class="subject-name" style="background:${subj.color};">${subj.subject}</div>`;
-                        allItems.forEach(item => {
-                            const btns = [];
-                            if (item.type === 'both' || item.type === 'negative') 
-                                btns.push(`<button class="track-btn" id="btn-${key}-${item.id}--1" onclick="toggleTracking('${key}','${item.id}',-1)">-1</button>`);
-                            if (item.type === 'both' || item.type === 'positive') 
-                                btns.push(`<button class="track-btn" id="btn-${key}-${item.id}-1" onclick="toggleTracking('${key}','${item.id}',1)">+1</button>`);
-                            html += `<div class="tracking-row"><span>${item.emoji}</span><div class="tracking-buttons">${btns.join('')}</div></div>`;
-                        });
-                        grid.innerHTML += html + '</div>';
-                    } else {
-                        grid.innerHTML += '<div class="grid-cell empty-cell"></div>';
-                    }
-                });
-            });
-
-            grid.innerHTML += '<div class="grid-cell total-row grid-header">TOTAL</div>';
-            days.forEach(d => grid.innerHTML += `<div class="grid-cell total-row" id="total-${d}"></div>`);
-
-            updateButtonStates();
-            renderWeekStats();
-            updateDayTotals();
-        }
+        });
+    });
+    
+    grid.innerHTML += '<div class="grid-cell total-row grid-header">TOTAL</div>';
+    days.forEach(d => grid.innerHTML += `<div class="grid-cell total-row" id="total-${d}"></div>`);
+    
+    updateButtonStates();
+    renderWeekStats();
+    updateDayTotals();
+}
+// ✅ FIN de renderSchedule() - NE RIEN AJOUTER APRÈS CETTE LIGNE
 
         async function updateButtonStates() {
-            const data = await getTrackingData();
-            const weekKey = getWeekKey();
-            const student = students.find(s => s.id === currentStudentId);
-            const weekType = getWeekType(currentWeek);
-            const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
-            const allItems = getAllItems();
+    const data = await getTrackingData();
+    const weekKey = getWeekKey();
+    const student = students.find(s => s.id === currentStudentId);
+    const weekType = getWeekType(currentWeek);
+    const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
+    const allItems = getAllItems();
 
-            days.forEach(day => {
-                slots.forEach(slot => {
-                    const key = `${day}-${slot}`;
-                    if (schedule[key]) {
-                        allItems.forEach(item => {
-                            const tk = `${weekKey}-${key}-${item.id}`;
-                            const val = data[tk];
-                            [-1, 1].forEach(bv => {
-                                const btn = document.getElementById(`btn-${key}-${item.id}-${bv}`);
-                                if (btn) {
-                                    btn.classList.remove('positive', 'negative');
-                                    if (val === bv) btn.classList.add(bv === 1 ? 'positive' : 'negative');
-                                }
-                            });
-                        });
-                    }
+    days.forEach(day => {
+        slots.forEach(slot => {
+            const key = `${day}-${slot}`;
+            if (schedule[key]) {
+                allItems.forEach(item => {
+                    const tk = `${weekKey}-${key}-${item.id}`;
+                    const val = data[tk];
+                    [-1, 1].forEach(bv => {
+                        const btn = document.getElementById(`btn-${key}-${item.id}-${bv}`);
+                        if (btn) {
+                            btn.classList.remove('positive', 'negative');
+                            if (val === bv) btn.classList.add(bv === 1 ? 'positive' : 'negative');
+                        }
+                    });
                 });
-            });
-        }
-
+            }
+        });
+    });
+}
+ 
         async function toggleTracking(key, itemId, val) {
             const data = await getTrackingData();
             const weekKey = getWeekKey();
@@ -1402,63 +1555,63 @@
         }
 
         async function updateDayTotals() {
-            const allItems = getAllItems();
-            const student = students.find(s => s.id === currentStudentId);
-            const weekType = getWeekType(currentWeek);
-            const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
-            const data = await getTrackingData();
-            const weekKey = getWeekKey();
+    const allItems = getAllItems();
+    const student = students.find(s => s.id === currentStudentId);
+    const weekType = getWeekType(currentWeek);
+    const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
+    const data = await getTrackingData();
+    const weekKey = getWeekKey();
 
-            days.forEach(day => {
-                const tots = {};
-                allItems.forEach(item => tots[item.id] = 0);
-                slots.forEach(slot => {
-                    const key = `${day}-${slot}`;
-                    if (schedule[key]) {
-                        allItems.forEach(item => {
-                            tots[item.id] += data[`${weekKey}-${key}-${item.id}`] || 0;
-                        });
-                    }
+    days.forEach(day => {
+        const tots = {};
+        allItems.forEach(item => tots[item.id] = 0);
+        slots.forEach(slot => {
+            const key = `${day}-${slot}`;
+            if (schedule[key]) {
+                allItems.forEach(item => {  // ✅ Boucle ajoutée
+                    tots[item.id] += data[`${weekKey}-${key}-${item.id}`] || 0;  // ✅ Crochets corrects
                 });
-                const cell = document.getElementById(`total-${day}`);
-                if (cell) {
-                    cell.innerHTML = allItems.map(item => 
-                        `<div style="margin:2px 0;font-size:10px;">${item.emoji}: <strong>${tots[item.id]}</strong></div>`
-                    ).join('');
-                }
-            });
+            }
+        });
+        const cell = document.getElementById(`total-${day}`);  // ✅ Parenthèses corrigées
+        if (cell) {
+            cell.innerHTML = allItems.map(item => 
+                `<div style="margin:2px 0;font-size:10px;">${item.emoji} ${item.name}: <strong>${tots[item.id]}</strong></div>`
+            ).join('');
         }
+    });
+}
 
-        async function renderWeekStats() {
-            const allItems = getAllItems();
-            const student = students.find(s => s.id === currentStudentId);
-            const weekType = getWeekType(currentWeek);
-            const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
-            const data = await getTrackingData();
-            const weekKey = getWeekKey();
-            const tots = {};
+       async function renderWeekStats() {
+    const allItems = getAllItems();
+    const student = students.find(s => s.id === currentStudentId);
+    const weekType = getWeekType(currentWeek);
+    const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
+    const data = await getTrackingData();
+    const weekKey = getWeekKey();
+    const tots = {};
 
-            allItems.forEach(item => tots[item.id] = 0);
-            days.forEach(day => {
-                slots.forEach(slot => {
-                    const key = `${day}-${slot}`;
-                    if (schedule[key]) {
-                        allItems.forEach(item => {
-                            tots[item.id] += data[`${weekKey}-${key}-${item.id}`] || 0;
-                        });
-                    }
+    allItems.forEach(item => tots[item.id] = 0);
+    days.forEach(day => {
+        slots.forEach(slot => {
+            const key = `${day}-${slot}`;
+            if (schedule[key]) {
+                allItems.forEach(item => {  // ✅ Boucle ajoutée
+                    tots[item.id] += data[`${weekKey}-${key}-${item.id}`] || 0;  // ✅ Crochets corrects
                 });
-            });
+            }
+        });
+    });
 
-            document.getElementById('weekStats').innerHTML = allItems.map(item => `
-                <div class="stat-card">
-                    <h3>${item.emoji} ${item.name}</h3>
-                    <div class="stat-value ${tots[item.id] >= 0 ? 'positive' : 'negative'}">
-                        ${tots[item.id] > 0 ? '+' : ''}${tots[item.id]}
-                    </div>
-                </div>
-            `).join('');
-        }
+    document.getElementById('weekStats').innerHTML = allItems.map(item => `
+        <div class="stat-card">
+            <h3>${item.emoji} ${item.name}</h3>
+            <div class="stat-value ${tots[item.id] >= 0 ? 'positive' : 'negative'}">
+                ${tots[item.id] > 0 ? '+' : ''}${tots[item.id]}
+            </div>
+        </div>
+    `).join('');
+}
 
         function previousWeek() {
             currentWeek--;
@@ -1470,5 +1623,31 @@
             renderSchedule();
         }
 
+        // ✅ Rendre les fonctions accessibles depuis le HTML
+window.openAddStudentModal = openAddStudentModal;
+window.addStudent = addStudent;
+window.closeModal = closeModal;
+window.deleteStudent = deleteStudent;
+window.openStudentTracking = openStudentTracking;
+window.backToStudentsList = backToStudentsList;
+window.logout = logout;
+window.openClassItemsModal = openClassItemsModal;
+window.addClassItem = addClassItem;
+window.deleteClassItem = deleteClassItem;
+window.openStudentItemsModal = openStudentItemsModal;
+window.addStudentItem = addStudentItem;
+window.deleteStudentItem = deleteStudentItem;
+window.openScheduleModal = openScheduleModal;
+window.addSubjectToSchedule = addSubjectToSchedule;
+window.toggleTracking = toggleTracking;
+window.previousWeek = previousWeek;
+window.nextWeek = nextWeek;
+window.toggleEmojiPicker = toggleEmojiPicker;
+window.selectEmoji = selectEmoji;
+window.selectNotationType = selectNotationType;
+window.selectScheduleWeek = selectScheduleWeek;
+window.handleSubjectChange = handleSubjectChange;
+
+// Initialisation
         loadStudents();
     </script>
