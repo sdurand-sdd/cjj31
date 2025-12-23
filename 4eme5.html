@@ -1514,6 +1514,33 @@ function renderSchedule() {
 }
 // ✅ FIN de renderSchedule() - NE RIEN AJOUTER APRÈS CETTE LIGNE
 
+        async function updateButtonStates() {
+    const data = await getTrackingData();
+    const weekKey = getWeekKey();
+    const student = students.find(s => s.id === currentStudentId);
+    const weekType = getWeekType(currentWeek);
+    const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
+    const allItems = getAllItems();
+
+    days.forEach(day => {
+        slots.forEach(slot => {
+            const key = `${day}-${slot}`;
+            if (schedule[key]) {
+                allItems.forEach(item => {
+                    const tk = `${weekKey}-${key}-${item.id}`;
+                    const val = data[tk];
+                    [-1, 1].forEach(bv => {
+                        const btn = document.getElementById(`btn-${key}-${item.id}-${bv}`);
+                        if (btn) {
+                            btn.classList.remove('positive', 'negative');
+                            if (val === bv) btn.classList.add(bv === 1 ? 'positive' : 'negative');
+                        }
+                    });
+                });
+            }
+        });
+    });
+}
  
         async function toggleTracking(key, itemId, val) {
             const data = await getTrackingData();
