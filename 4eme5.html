@@ -893,17 +893,15 @@
         // VÉRIFICATION AUTHENTIFICATION
         // ========================================
         auth.onAuthStateChanged((user) => {
-            if (!user) {
-                // Pas connecté, rediriger vers la page de connexion
-                window.location.href = 'login.html';
-            } else {
-                // Afficher l'email de l'utilisateur
-                currentUserEmail = user.email;
-                document.getElementById('userInfo').textContent = `👤 ${user.email}`;
-                // Charger les données
-                loadStudents();
-            }
-        });
+    if (!user) {
+        window.location.href = 'login.html';
+    } else {
+        currentUserEmail = user.email;
+        isAdmin = ADMIN_EMAILS.includes(currentUserEmail);  // ← AJOUTEZ CETTE LIGNE
+        document.getElementById('userInfo').textContent = `👤 ${user.email}`;
+        loadStudents();
+    }
+});
 
         // Fonction de déconnexion
         async function logout() {
