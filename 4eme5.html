@@ -1485,7 +1485,6 @@ function renderSchedule() {
             if (subj) {
                 let html = `<div class="grid-cell subject-cell"><div class="subject-name" style="background:${subj.color};">${subj.subject}</div>`;
                 
-                // ✅ BOUCLE SUR LES ITEMS
                 allItems.forEach(item => {
                     const btns = [];
                     if (item.type === 'both' || item.type === 'negative') 
@@ -1506,15 +1505,15 @@ function renderSchedule() {
         });
     });
     
-            grid.innerHTML += '<div class="grid-cell total-row grid-header">TOTAL</div>';
-            days.forEach(d => grid.innerHTML += `<div class="grid-cell total-row" id="total-${d}"></div>`);
+    grid.innerHTML += '<div class="grid-cell total-row grid-header">TOTAL</div>';
+    days.forEach(d => grid.innerHTML += `<div class="grid-cell total-row" id="total-${d}"></div>`);
+    
+    updateButtonStates();
+    renderWeekStats();
+    updateDayTotals();
+}
+// ✅ FIN de renderSchedule() - NE RIEN AJOUTER APRÈS CETTE LIGNE
 
-            updateButtonStates();
-            renderWeekStats();
-            updateDayTotals();
-        }
-
-        if (schedule[key]) {
     allItems.forEach(item => {  // ✅ Boucle manquante
         const tk = `${weekKey}-${key}-${item.id}`;
         const val = data[tk];
