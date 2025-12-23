@@ -1044,11 +1044,8 @@ function updateActionButtons() {
                 id: doc.id,
                 ...doc.data()
             });
-        });
-        
-        // ✅ Afficher les élèves
-        displayStudents();
-        
+        }); 
+                   
         // ✅ Afficher le rôle (ce code était orphelin)
         if (isAdmin && !isOwner) {
             document.getElementById('className').innerHTML = `${CLASS_NAME} <span style="background: #ff6b6b; color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.7em;">🛠️ Admin</span>`;
