@@ -1491,5 +1491,30 @@ function updateActionButtons() {
             renderSchedule();
         }
 
+        // ✅ Rendre les fonctions accessibles depuis le HTML
+window.openAddStudentModal = openAddStudentModal;
+window.addStudent = addStudent;
+window.closeModal = closeModal;
+window.deleteStudent = deleteStudent;
+window.openStudentTracking = openStudentTracking;
+window.backToStudentsList = backToStudentsList;
+window.logout = logout;
+window.openClassItemsModal = openClassItemsModal;
+window.addClassItem = addClassItem;
+window.deleteClassItem = deleteClassItem;
+window.openStudentItemsModal = openStudentItemsModal;
+window.addStudentItem = addStudentItem;
+window.deleteStudentItem = deleteStudentItem;
+window.openScheduleModal = openScheduleModal;
+window.addSubjectToSchedule = addSubjectToSchedule;
+window.toggleTracking = toggleTracking;
+window.previousWeek = previousWeek;
+window.nextWeek = nextWeek;
+window.toggleEmojiPicker = toggleEmojiPicker;
+window.selectEmoji = selectEmoji;
+window.selectNotationType = selectNotationType;
+window.selectScheduleWeek = selectScheduleWeek;
+
+// Initialisation
         loadStudents();
     </script>
