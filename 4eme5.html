@@ -861,7 +861,7 @@
          // Imports Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-        import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
         
         // ⚠️ CONFIGURATION FIREBASE - À MODIFIER
@@ -1032,29 +1032,26 @@ function updateActionButtons() {
         }
 
        
-        async function loadStudents() {
-            try {
-                const doc = await db.collection('classes').doc(CLASS_ID).get();
-                if (doc.exists) {
-                    const data = doc.data();
-                    students = data.students || [];
-                    classItems = data.classItems || [];
-                    
-                    // Vérifier si admin
-                    isAdmin = ADMIN_EMAILS.includes(currentUserEmail);
-                    
-                    // Vérifier les permissions
-                    const owner = data.owner;
-                    const collaborators = data.collaborators || [];
-                    
-                    isOwner = (owner === currentUserEmail);
-                    const isCollaborator = collaborators.includes(currentUserEmail);
-                    
-                    if (!isOwner && !isCollaborator && !isAdmin) {
-                        alert('Vous n\'avez pas accès à cette classe.');
-                        window.location.href = 'fichedesuivi.html';
-                        return;
-                    }
+       async function loadStudents() {
+    try {
+        // ✅ NOUVELLE SYNTAXE
+        const studentsRef = collection(db, 'classes', CLASS_ID, 'students');
+        const querySnapshot = await getDocs(studentsRef);
+        
+        students = [];
+        querySnapshot.forEach((doc) => {
+            students.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
+        displayStudents();
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors du chargement des élèves');
+    }
+}
                     
                     // Afficher le rôle
                     if (isAdmin && !isOwner) {
@@ -1090,18 +1087,19 @@ function updateActionButtons() {
         }
 
         async function saveClassData() {
-            try {
-                await db.collection('classes').doc(CLASS_ID).set({
-                    students: students,
-                    classItems: classItems,
-                    className: CLASS_NAME,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            } catch (error) {
-                console.error('Erreur:', error);
-                alert('Erreur de sauvegarde');
-            }
-        }
+    try {
+        const classRef = doc(db, 'classes', CLASS_ID);
+        await updateDoc(classRef, {
+            students: students,
+            classItems: classItems,
+            className: CLASS_NAME,
+            updatedAt: new Date()
+        });
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur de sauvegarde');
+    }
+}
 
         function openClassItemsModal() {
             if (!isOwner && !isAdmin) {
@@ -1266,7 +1264,8 @@ function updateActionButtons() {
     if (confirm(`Supprimer ${s.name} ?`)) {
         students = students.filter(st => st.id !== id);
         try {
-            await db.collection('tracking').doc(`${CLASS_ID}_${id}`).delete();
+            const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${id}`);
+            await deleteDoc(trackingRef);
         } catch (e) {}
         await saveClassData();
         renderStudentsList();
@@ -1317,24 +1316,26 @@ function updateActionButtons() {
         }
 
         async function getTrackingData() {
-            try {
-                const doc = await db.collection('tracking').doc(`${CLASS_ID}_${currentStudentId}`).get();
-                return doc.exists ? doc.data() : {};
-            } catch (e) {
-                return {};
-            }
-        }
+    try {
+        const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${currentStudentId}`);
+        const docSnap = await getDoc(trackingRef);
+        return docSnap.exists() ? docSnap.data() : {};
+    } catch (e) {
+        return {};
+    }
+}
 
         async function saveTrackingData(data) {
-            try {
-                await db.collection('tracking').doc(`${CLASS_ID}_${currentStudentId}`).set({
-                    ...data,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            } catch (e) {
-                console.error('Erreur:', e);
-            }
-        }
+    try {
+        const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${currentStudentId}`);
+        await setDoc(trackingRef, {
+            ...data,
+            updatedAt: new Date()
+        });
+    } catch (e) {
+        console.error('Erreur:', e);
+    }
+}
 
         function getAllItems() {
             const s = students.find(st => st.id === currentStudentId);
