@@ -892,12 +892,14 @@
         // ========================================
         // VÉRIFICATION AUTHENTIFICATION
         // ========================================
-        auth.onAuthStateChanged((user) => {
+        aauth.onAuthStateChanged((user) => {
     if (!user) {
         window.location.href = 'login.html';
     } else {
         currentUserEmail = user.email;
-        isAdmin = ADMIN_EMAILS.includes(currentUserEmail);  // ← AJOUTEZ CETTE LIGNE
+        isAdmin = (currentUserEmail === 'collegejeanjaures.sdurand@gmail.com');  // ← Solution temporaire
+        console.log('currentUserEmail:', currentUserEmail);
+        console.log('isAdmin:', isAdmin);
         document.getElementById('userInfo').textContent = `👤 ${user.email}`;
         loadStudents();
     }
