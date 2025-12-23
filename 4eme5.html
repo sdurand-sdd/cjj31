@@ -1416,14 +1416,7 @@ async function saveTrackingData(data) {
         console.error('Erreur:', e);
     }
 }
-
-function getAllItems() {
-    const s = students.find(st => st.id === currentStudentId);
-    return [...classItems, ...(s.specificItems || [])];
-}
-        
-        
-        
+                
         function getAllItems() {
             const s = students.find(st => st.id === currentStudentId);
             return [...classItems, ...(s.specificItems || [])];
