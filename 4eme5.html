@@ -1541,31 +1541,32 @@ function renderSchedule() {
         }
 
         async function updateDayTotals() {
-            const allItems = getAllItems();
-            const student = students.find(s => s.id === currentStudentId);
-            const weekType = getWeekType(currentWeek);
-            const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
-            const data = await getTrackingData();
-            const weekKey = getWeekKey();
+    const allItems = getAllItems();
+    const student = students.find(s => s.id === currentStudentId);
+    const weekType = getWeekType(currentWeek);
+    const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
+    const data = await getTrackingData();
+    const weekKey = getWeekKey();
 
-            days.forEach(day => {
-                const tots = {};
-                allItems.forEach(item => tots[item.id] = 0);
-                slots.forEach(slot => {
-                    const key = `${day}-${slot}`;
-                    if (schedule[key]) {
-                       tots[item.id] += data[`${weekKey}-${key}-${item.id}`] || 0;
-                        });
-                    }
+    days.forEach(day => {
+        const tots = {};
+        allItems.forEach(item => tots[item.id] = 0);
+        slots.forEach(slot => {
+            const key = `${day}-${slot}`;
+            if (schedule[key]) {
+                allItems.forEach(item => {  // ✅ Boucle ajoutée
+                    tots[item.id] += data[`${weekKey}-${key}-${item.id}`] || 0;  // ✅ Crochets corrects
                 });
-                const cell = document.getElementById(`total-${day}`;
-                if (cell) {
-                    cell.innerHTML = allItems.map(item => 
-                    `<div style="margin:2px 0;font-size:10px;">${item.emoji} ${item.name}: <strong>${tots[item.id]}</strong></div>`
-                    ).join('');
-                }
-            });
+            }
+        });
+        const cell = document.getElementById(`total-${day}`);  // ✅ Parenthèses corrigées
+        if (cell) {
+            cell.innerHTML = allItems.map(item => 
+                `<div style="margin:2px 0;font-size:10px;">${item.emoji} ${item.name}: <strong>${tots[item.id]}</strong></div>`
+            ).join('');
         }
+    });
+}
 
         async function renderWeekStats() {
             const allItems = getAllItems();
