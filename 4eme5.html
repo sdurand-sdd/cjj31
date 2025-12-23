@@ -1004,10 +1004,7 @@
             selectedScheduleWeek = el.dataset.week;
         }
 
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-
+       
         async function loadStudents() {
             try {
                 const doc = await db.collection('classes').doc(CLASS_ID).get();
@@ -1229,23 +1226,25 @@
             closeModal('addStudentModal');
             document.getElementById('newStudentName').value = '';
         }
-
-        async function deleteStudent(id) {
-            if (!isOwner && !isAdmin) {
-                alert('Seul le propriétaire ou un administrateur peut supprimer des élèves.');
-                return;
-            }
-            const s = students.find(st => st.id === id);
-            if (confirm(`Supprimer ${s.name} ?`)) {
-                students = students.filter(st => st.id !== id);
-                try {
-                    await db.collection('tracking').doc(`${CLASS_ID}_${id}`).delete();
-                } catch (e) {}
-                await saveClassData();
-                renderStudentsList();
-            }
+ function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
         }
-
+            
+        async function deleteStudent(id) {
+    if (!isOwner && !isAdmin) {
+        alert('Seul le propriétaire ou un administrateur peut supprimer des élèves.');
+        return;
+    }
+    const s = students.find(st => st.id === id);
+    if (confirm(`Supprimer ${s.name} ?`)) {
+        students = students.filter(st => st.id !== id);
+        try {
+            await db.collection('tracking').doc(`${CLASS_ID}_${id}`).delete();
+        } catch (e) {}
+        await saveClassData();
+        renderStudentsList();
+    }
+}
         function openStudentTracking(id) {
             currentStudentId = id;
             const s = students.find(st => st.id === id);
