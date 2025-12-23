@@ -1568,35 +1568,36 @@ function renderSchedule() {
     });
 }
 
-        async function renderWeekStats() {
-            const allItems = getAllItems();
-            const student = students.find(s => s.id === currentStudentId);
-            const weekType = getWeekType(currentWeek);
-            const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
-            const data = await getTrackingData();
-            const weekKey = getWeekKey();
-            const tots = {};
+       async function renderWeekStats() {
+    const allItems = getAllItems();
+    const student = students.find(s => s.id === currentStudentId);
+    const weekType = getWeekType(currentWeek);
+    const schedule = weekType === 'A' ? student.scheduleA : student.scheduleB;
+    const data = await getTrackingData();
+    const weekKey = getWeekKey();
+    const tots = {};
 
-            allItems.forEach(item => tots[item.id] = 0);
-            days.forEach(day => {
-                slots.forEach(slot => {
-                    const key = `${day}-${slot}`;
-                    if (schedule[key]) {
-                       tots[item.id] += data[`${weekKey}-${key}-${item.id}`] || 0;
-                        });
-                    }
+    allItems.forEach(item => tots[item.id] = 0);
+    days.forEach(day => {
+        slots.forEach(slot => {
+            const key = `${day}-${slot}`;
+            if (schedule[key]) {
+                allItems.forEach(item => {  // ✅ Boucle ajoutée
+                    tots[item.id] += data[`${weekKey}-${key}-${item.id}`] || 0;  // ✅ Crochets corrects
                 });
-            });
+            }
+        });
+    });
 
-            document.getElementById('weekStats').innerHTML = allItems.map(item => `
-                <div class="stat-card">
-                    <h3>${item.emoji} ${item.name}</h3>
-                    <div class="stat-value ${tots[item.id] >= 0 ? 'positive' : 'negative'}">
-                        ${tots[item.id] > 0 ? '+' : ''}${tots[item.id]}
-                    </div>
-                </div>
-            `).join('');
-        }
+    document.getElementById('weekStats').innerHTML = allItems.map(item => `
+        <div class="stat-card">
+            <h3>${item.emoji} ${item.name}</h3>
+            <div class="stat-value ${tots[item.id] >= 0 ? 'positive' : 'negative'}">
+                ${tots[item.id] > 0 ? '+' : ''}${tots[item.id]}
+            </div>
+        </div>
+    `).join('');
+}
 
         function previousWeek() {
             currentWeek--;
