@@ -799,63 +799,84 @@
     </div>
 
     <div class="modal" id="scheduleModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Emploi du temps</h2>
-                <button class="close-modal" onclick="closeModal('scheduleModal')">✕</button>
-            </div>
-            <div class="info-banner"><strong>📅</strong> Semaines A et B (quinzaine)</div>
-            <div class="form-group">
-                <label>Semaine :</label>
-                <div class="week-selector">
-                    <div class="week-option semaine-a selected" data-week="A" onclick="selectScheduleWeek(this)">Semaine A</div>
-                    <div class="week-option semaine-b" data-week="B" onclick="selectScheduleWeek(this)">Semaine B</div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Jour :</label>
-                <select id="daySelect">
-                    <option value="Lundi">Lundi</option>
-                    <option value="Mardi">Mardi</option>
-                    <option value="Mercredi">Mercredi</option>
-                    <option value="Jeudi">Jeudi</option>
-                    <option value="Vendredi">Vendredi</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Créneau :</label>
-                <select id="slotSelect">
-                    <option value="M1">M1 (8h30-9h25)</option>
-                    <option value="M2">M2 (9h30-10h25)</option>
-                    <option value="M3">M3 (10h40-11h35)</option>
-                    <option value="M4">M4 (11h40-12h35)</option>
-                    <option value="S0">S0 (12h55-13h50)</option>
-                    <option value="S1">S1 (13h55-14h50)</option>
-                    <option value="S2">S2 (15h05-16h00)</option>
-                    <option value="S3">S3 (16h05-17h00)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Matière :</label>
-                <input type="text" id="subjectInput" placeholder="Ex: Mathématiques">
-            </div>
-            <div class="form-group">
-                <label>Couleur :</label>
-                <div class="subject-colors">
-                    <div class="color-option selected" style="background: #3498db;" data-color="#3498db">Bleu</div>
-                    <div class="color-option" style="background: #e74c3c;" data-color="#e74c3c">Rouge</div>
-                    <div class="color-option" style="background: #2ecc71;" data-color="#2ecc71">Vert</div>
-                    <div class="color-option" style="background: #f39c12;" data-color="#f39c12">Orange</div>
-                    <div class="color-option" style="background: #9b59b6;" data-color="#9b59b6">Violet</div>
-                    <div class="color-option" style="background: #1abc9c;" data-color="#1abc9c">Turquoise</div>
-                    <div class="color-option" style="background: #e91e63;" data-color="#e91e63">Rose</div>
-                    <div class="color-option" style="background: #ff5722;" data-color="#ff5722">Orange F</div>
-                    <div class="color-option" style="background: #607d8b;" data-color="#607d8b">Gris</div>
-                </div>
-            </div>
+    <div class="modal-content">
+        <h2>📅 Ajouter une matière</h2>
+        
+        <!-- Sélection semaine -->
+        <div class="week-selector">
+            <div class="week-option selected" data-week="A" onclick="selectScheduleWeek(this)">Semaine A</div>
+            <div class="week-option" data-week="B" onclick="selectScheduleWeek(this)">Semaine B</div>
+        </div>
+        
+        <!-- Sélection jour -->
+        <label>Jour :</label>
+        <select id="daySelect">
+            <option value="Lundi">Lundi</option>
+            <option value="Mardi">Mardi</option>
+            <option value="Mercredi">Mercredi</option>
+            <option value="Jeudi">Jeudi</option>
+            <option value="Vendredi">Vendredi</option>
+        </select>
+        
+        <!-- Sélection créneau -->
+        <label>Créneau :</label>
+        <select id="slotSelect">
+            <option value="M1">M1 (8h30-9h25)</option>
+            <option value="M2">M2 (9h30-10h25)</option>
+            <option value="M3">M3 (10h40-11h35)</option>
+            <option value="M4">M4 (11h40-12h35)</option>
+            <option value="S0">S0 (12h55-13h50)</option>
+            <option value="S1">S1 (13h55-14h50)</option>
+            <option value="S2">S2 (15h05-16h00)</option>
+            <option value="S3">S3 (16h05-17h00)</option>
+        </select>
+        
+        <!-- ✅ NOUVEAU : Liste déroulante de matières -->
+        <label>Matière :</label>
+        <select id="subjectSelect" onchange="handleSubjectChange()">
+            <option value="">-- Choisir une matière --</option>
+            <option value="Mathématiques">📐 Mathématiques</option>
+            <option value="Français">📚 Français</option>
+            <option value="Histoire-Géo">🌍 Histoire-Géo</option>
+            <option value="Anglais">🇬🇧 Anglais</option>
+            <option value="Espagnol">🇪🇸 Espagnol</option>
+            <option value="Allemand">🇩🇪 Allemand</option>
+            <option value="SVT">🧬 SVT</option>
+            <option value="Physique-Chimie">⚗️ Physique-Chimie</option>
+            <option value="Technologie">🔧 Technologie</option>
+            <option value="EPS">⚽ EPS</option>
+            <option value="Arts Plastiques">🎨 Arts Plastiques</option>
+            <option value="Musique">🎵 Musique</option>
+            <option value="Vie de classe">👥 Vie de classe</option>
+            <option value="Permanence">📖 Permanence</option>
+            <option value="Autre">✏️ Autre (personnalisé)</option>
+        </select>
+        
+        <!-- ✅ NOUVEAU : Champ personnalisé (masqué par défaut) -->
+        <div id="customSubjectDiv" style="display: none;">
+            <label>Nom personnalisé :</label>
+            <input type="text" id="customSubjectInput" placeholder="Ex: Accompagnement personnalisé">
+        </div>
+        
+        <!-- Sélection couleur (automatique maintenant) -->
+        <label>Couleur : <span id="colorPreview" style="display: inline-block; width: 20px; height: 20px; border-radius: 3px; margin-left: 10px;"></span></label>
+        <div class="color-picker" id="colorPickerSchedule">
+            <div class="color-option" data-color="#3498db" style="background: #3498db;"></div>
+            <div class="color-option" data-color="#e74c3c" style="background: #e74c3c;"></div>
+            <div class="color-option" data-color="#f39c12" style="background: #f39c12;"></div>
+            <div class="color-option" data-color="#9b59b6" style="background: #9b59b6;"></div>
+            <div class="color-option" data-color="#27ae60" style="background: #27ae60;"></div>
+            <div class="color-option" data-color="#16a085" style="background: #16a085;"></div>
+            <div class="color-option" data-color="#34495e" style="background: #34495e;"></div>
+            <div class="color-option" data-color="#95a5a6" style="background: #95a5a6;"></div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
             <button class="btn-primary" onclick="addSubjectToSchedule()">Ajouter</button>
+            <button class="btn-secondary" onclick="closeModal('scheduleModal')">Annuler</button>
         </div>
     </div>
+</div>
 
     <script type="module">
          // Imports Firebase
@@ -966,6 +987,25 @@ function updateActionButtons() {
             'S0': '12h55-13h50', 'S1': '13h55-14h50', 'S2': '15h05-16h00', 'S3': '16h05-17h00'
         };
 
+        // ✅ AJOUTER CES MATIÈRES PRÉDÉFINIES
+        const predefinedSubjects = {
+        'Mathématiques': '#3498db',
+        'Français': '#e74c3c',
+        'Histoire-Géo': '#f39c12',
+        'Anglais': '#9b59b6',
+        'Espagnol': '#e67e22',
+        'Allemand': '#1abc9c',
+        'SVT': '#27ae60',
+        'Physique-Chimie': '#16a085',
+        'Technologie': '#34495e',
+        'EPS': '#2ecc71',
+        'Arts Plastiques': '#ff6b9d',
+        'Musique': '#8e44ad',
+        'Vie de classe': '#95a5a6',
+        'Permanence': '#bdc3c7',
+        'Chinois': '#1abc9c',
+        'Autre': '#7f8c8d'
+};
         // Calcul semaine A/B
         function getWeekType(weekOffset = 0) {
             const startDate = new Date(SCHOOL_YEAR_START);
