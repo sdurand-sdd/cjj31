@@ -1328,6 +1328,73 @@ function updateActionButtons() {
             document.getElementById('scheduleModal').classList.add('active');
         }
 
+// ✅ NOUVELLE FONCTION : Gérer le changement de matière
+function handleSubjectChange() {
+    const select = document.getElementById('subjectSelect');
+    const customDiv = document.getElementById('customSubjectDiv');
+    const colorPreview = document.getElementById('colorPreview');
+    const selectedSubject = select.value;
+    
+    // Afficher/masquer le champ personnalisé
+    if (selectedSubject === 'Autre') {
+        customDiv.style.display = 'block';
+        selectedColor = '#7f8c8d'; // Couleur par défaut pour "Autre"
+    } else {
+        customDiv.style.display = 'none';
+        // Appliquer la couleur prédéfinie
+        if (predefinedSubjects[selectedSubject]) {
+            selectedColor = predefinedSubjects[selectedSubject];
+        }
+    }
+    
+    // Mettre à jour l'aperçu de couleur
+    colorPreview.style.background = selectedColor;
+    
+    // Mettre à jour la sélection visuelle dans le color picker
+    document.querySelectorAll('#colorPickerSchedule .color-option').forEach(opt => {
+        opt.classList.remove('selected');
+        if (opt.dataset.color === selectedColor) {
+            opt.classList.add('selected');
+        }
+    });
+}
+
+// ✅ MODIFIER addSubjectToSchedule()
+async function addSubjectToSchedule() {
+    const day = document.getElementById('daySelect').value;
+    const slot = document.getElementById('slotSelect').value;
+    const subjectSelect = document.getElementById('subjectSelect').value;
+    
+    // Déterminer le nom de la matière
+    let subjectName;
+    if (subjectSelect === 'Autre') {
+        subjectName = document.getElementById('customSubjectInput').value.trim();
+        if (!subjectName) return alert('Entrez un nom de matière personnalisé');
+    } else if (subjectSelect === '') {
+        return alert('Choisissez une matière');
+    } else {
+        subjectName = subjectSelect;
+    }
+    
+    const student = students.find(s => s.id === currentStudentId);
+    const scheduleKey = selectedScheduleWeek === 'A' ? 'scheduleA' : 'scheduleB';
+    if (!student[scheduleKey]) student[scheduleKey] = {};
+    
+    student[scheduleKey][`${day}-${slot}`] = {
+        subject: subjectName,
+        color: selectedColor
+    };
+    
+    await saveClassData();
+    renderSchedule();
+    alert('Matière ajoutée !');
+    
+    // Réinitialiser le formulaire
+    document.getElementById('subjectSelect').value = '';
+    document.getElementById('customSubjectInput').value = '';
+    document.getElementById('customSubjectDiv').style.display = 'none';
+}
+        
         async function addSubjectToSchedule() {
             const day = document.getElementById('daySelect').value;
             const slot = document.getElementById('slotSelect').value;
@@ -1554,6 +1621,7 @@ window.toggleEmojiPicker = toggleEmojiPicker;
 window.selectEmoji = selectEmoji;
 window.selectNotationType = selectNotationType;
 window.selectScheduleWeek = selectScheduleWeek;
+window.handleSubjectChange = handleSubjectChange;
 
 // Initialisation
         loadStudents();
