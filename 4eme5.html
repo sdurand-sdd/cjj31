@@ -1393,38 +1393,7 @@ async function addSubjectToSchedule() {
     document.getElementById('customSubjectInput').value = '';
     document.getElementById('customSubjectDiv').style.display = 'none';
 }
-        
-        async function addSubjectToSchedule() {
-            const day = document.getElementById('daySelect').value;
-            const slot = document.getElementById('slotSelect').value;
-            const subject = document.getElementById('subjectInput').value.trim();
-            if (!subject) return alert('Entrez une matière');
-            
-            const student = students.find(s => s.id === currentStudentId);
-            const scheduleKey = selectedScheduleWeek === 'A' ? 'scheduleA' : 'scheduleB';
-            if (!student[scheduleKey]) student[scheduleKey] = {};
-            
-            student[scheduleKey][`${day}-${slot}`] = {
-                subject: subject,
-                color: selectedColor
-            };
-            
-            await saveClassData();
-            renderSchedule();
-            alert('Matière ajoutée !');
-            document.getElementById('subjectInput').value = '';
-        }
-
-        async function getTrackingData() {
-    try {
-        const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${currentStudentId}`);
-        const docSnap = await getDoc(trackingRef);
-        return docSnap.exists() ? docSnap.data() : {};
-    } catch (e) {
-        return {};
-    }
-}
-
+   
         async function saveTrackingData(data) {
     try {
         const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${currentStudentId}`);
