@@ -677,10 +677,8 @@
                 <div class="stats-summary" id="weekStats"></div>
                 <div class="schedule-grid" id="scheduleGrid"></div>
 
-                <div class="action-buttons">
-                    ${(isOwner || isAdmin) ? '<button class="btn-secondary" onclick="openScheduleModal()">📅 Emploi du temps</button>' : ''}
-                    ${(isOwner || isAdmin) ? '<button class="btn-secondary" onclick="openStudentItemsModal()">⚙️ Items spécifiques</button>' : ''}
-                </div>
+               <!-- ✅ METTRE CECI DANS LE HTML -->
+                <div class="action-buttons" id="actionButtons"></div>
             </div>
         </div>
     </div>
@@ -905,6 +903,33 @@
     }
 });
 
+        // ✅ AJOUTER CE CODE JAVASCRIPT
+function updateActionButtons() {
+    const actionButtonsDiv = document.getElementById('actionButtons');
+    
+    if (isOwner || isAdmin) {
+        actionButtonsDiv.innerHTML = `
+            <button class="btn-secondary" onclick="openScheduleModal()">📅 Emploi du temps</button>
+            <button class="btn-secondary" onclick="openStudentItemsModal()">⚙️ Items spécifiques</button>
+        `;
+    } else {
+        actionButtonsDiv.innerHTML = '';
+    }
+}
+
+// Appelez cette fonction après avoir défini isOwner et isAdmin
+auth.onAuthStateChanged(user => {
+    if (user) {
+        currentUserEmail = user.email;
+        isOwner = OWNER_EMAIL === currentUserEmail;
+        isAdmin = ADMIN_EMAILS.includes(currentUserEmail);
+        
+        updateActionButtons(); // ✅ AJOUTER CETTE LIGNE
+        
+        loadStudents();
+    }
+});
+        
         // Fonction de déconnexion
         async function logout() {
             if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
