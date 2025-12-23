@@ -1103,21 +1103,29 @@ function updateActionButtons() {
         }
 
        
-       async function loadStudents() {
+async function loadStudents() {
     try {
-        // ✅ Charger les élèves
-        const studentsRef = collection(db, 'classes', CLASS_ID, 'students');
-        const querySnapshot = await getDocs(studentsRef);
+        // ✅ Charger le document de la classe
+        const classRef = doc(db, 'classes', CLASS_ID);
+        const classDoc = await getDoc(classRef);
         
-        students = [];
-        querySnapshot.forEach((doc) => {
-            students.push({
-                id: doc.id,
-                ...doc.data()
+        if (classDoc.exists()) {
+            const data = classDoc.data();
+            students = data.students || [];
+            classItems = data.classItems || [];
+        } else {
+            students = [];
+            classItems = [];
+            // Créer le document s'il n'existe pas
+            await setDoc(classRef, {
+                students: [],
+                classItems: [],
+                className: CLASS_NAME,
+                createdAt: new Date()
             });
-        }); 
-                   
-        // ✅ Afficher le rôle (ce code était orphelin)
+        }
+        
+        // ✅ Afficher le rôle
         if (isAdmin && !isOwner) {
             document.getElementById('className').innerHTML = `${CLASS_NAME} <span style="background: #ff6b6b; color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.7em;">🛠️ Admin</span>`;
         } else if (isOwner) {
