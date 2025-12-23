@@ -1151,15 +1151,15 @@ function updateActionButtons() {
             });
         }
 
-        async function saveClassData() {
+      async function saveClassData() {
     try {
         const classRef = doc(db, 'classes', CLASS_ID);
-        await updateDoc(classRef, {
+        await setDoc(classRef, {
             students: students,
             classItems: classItems,
             className: CLASS_NAME,
             updatedAt: new Date()
-        });
+        }, { merge: true }); // ✅ merge: true crée le doc s'il n'existe pas
     } catch (error) {
         console.error('Erreur:', error);
         alert('Erreur de sauvegarde');
