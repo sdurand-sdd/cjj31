@@ -1394,20 +1394,8 @@ async function addSubjectToSchedule() {
     document.getElementById('customSubjectInput').value = '';
     document.getElementById('customSubjectDiv').style.display = 'none';
 }
-   
-        async function saveTrackingData(data) {
-    try {
-        const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${currentStudentId}`);
-        await setDoc(trackingRef, {
-            ...data,
-            updatedAt: new Date()
-        });
-    } catch (e) {
-        console.error('Erreur:', e);
-    }
-}
 
-        async function getTrackingData() {
+async function getTrackingData() {
     try {
         const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${currentStudentId}`);
         const docSnap = await getDoc(trackingRef);
