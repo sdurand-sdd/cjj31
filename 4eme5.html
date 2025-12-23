@@ -1406,6 +1406,35 @@ async function addSubjectToSchedule() {
     }
 }
 
+        async function getTrackingData() {
+    try {
+        const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${currentStudentId}`);
+        const docSnap = await getDoc(trackingRef);
+        return docSnap.exists() ? docSnap.data() : {};
+    } catch (e) {
+        return {};
+    }
+}
+
+async function saveTrackingData(data) {
+    try {
+        const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${currentStudentId}`);
+        await setDoc(trackingRef, {
+            ...data,
+            updatedAt: new Date()
+        });
+    } catch (e) {
+        console.error('Erreur:', e);
+    }
+}
+
+function getAllItems() {
+    const s = students.find(st => st.id === currentStudentId);
+    return [...classItems, ...(s.specificItems || [])];
+}
+        
+        
+        
         function getAllItems() {
             const s = students.find(st => st.id === currentStudentId);
             return [...classItems, ...(s.specificItems || [])];
