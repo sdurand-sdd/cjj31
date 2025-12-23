@@ -451,86 +451,99 @@
         </div>
     </div>
 
-    <script>
-        // ========================================
-        // ⚠️ CONFIGURATION FIREBASE - À MODIFIER
-        // ========================================
-        const firebaseConfig = {
-          apiKey: "AIzaSyA4BpxaadwjKgiJH3rwOdk3WaJ9m5G9qqw",
-          authDomain: "suivi-classe-4eme.firebaseapp.com",
-          databaseURL: "https://suivi-classe-4eme-default-rtdb.europe-west1.firebasedatabase.app",
-          projectId: "suivi-classe-4eme",
-          storageBucket: "suivi-classe-4eme.firebasestorage.app",
-          messagingSenderId: "1088897454236",
-          appId: "1:1088897454236:web:9d2f1f5e25532e93605d59"
-};
-
-        // ========================================
-        // ⚠️ EMAIL ADMINISTRATEUR
-        // ========================================
-        const ADMIN_EMAILS = ['collegejeanjaures.sdurand@gmail.com'];
-
-        // Initialiser Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-
-        // ========================================
-        // CODE DE L'APPLICATION
-        // ========================================
-        let classes = [];
-        let currentUserEmail = '';
-        let currentManagingClassIndex = -1;
-        let isAdmin = false;
-
-        // Vérification authentification
-        auth.onAuthStateChanged((user) => {
-            if (!user) {
-                window.location.href = 'login.html';
+       <script type="module">
+    // ✅ 1. IMPORTS
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    
+    // ✅ 2. CONFIGURATION FIREBASE
+    const firebaseConfig = {
+        apiKey: "AIzaSyA4BpxaadwjKgiJH3rwOdk3WaJ9m5G9qqw",
+        authDomain: "suivi-classe-4eme.firebaseapp.com",
+        databaseURL: "https://suivi-classe-4eme-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "suivi-classe-4eme",
+        storageBucket: "suivi-classe-4eme.firebasestorage.app",
+        messagingSenderId: "1088897454236",
+        appId: "1:1088897454236:web:9d2f1f5e25532e93605d59"
+    };
+    
+    // ✅ 3. EMAIL ADMINISTRATEUR
+    const ADMIN_EMAILS = ['collegejeanjaures.sdurand@gmail.com'];
+    
+    // ✅ 4. INITIALISATION FIREBASE (NOUVELLE SYNTAXE)
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    // ✅ 5. VARIABLES GLOBALES
+    let classes = [];
+    let currentUserEmail = '';
+    let currentManagingClassIndex = -1;
+    let isAdmin = false;
+    
+    // ✅ 6. VÉRIFICATION AUTHENTIFICATION
+    auth.onAuthStateChanged((user) => {
+        if (!user) {
+            window.location.href = 'login.html';
+        } else {
+            currentUserEmail = user.email;
+            isAdmin = ADMIN_EMAILS.includes(currentUserEmail);
+            
+            if (isAdmin) {
+                document.getElementById('userInfo').textContent = `🛠️ Admin: ${user.email}`;
+                document.getElementById('adminButton').style.display = 'block';
             } else {
-                currentUserEmail = user.email;
-                isAdmin = ADMIN_EMAILS.includes(currentUserEmail);
-                
-                if (isAdmin) {
-                    document.getElementById('userInfo').textContent = `🛠️ Admin: ${user.email}`;
-                    document.getElementById('adminButton').style.display = 'block';
-                } else {
-                    document.getElementById('userInfo').textContent = `👤 ${user.email}`;
-                }
-                
-                loadClasses();
-            }
-        });
-
-        async function logout() {
-            if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
-                try {
-                    await auth.signOut();
-                    window.location.href = 'login.html';
-                } catch (error) {
-                    console.error('Erreur:', error);
-                    alert('Erreur lors de la déconnexion');
-                }
-            }
-        }
-
-        async function loadClasses() {
-            try {
-                const doc = await db.collection('fiches_suivi').doc('classes_list').get();
-                if (doc.exists) {
-                    classes = doc.data().classes || [];
-                } else {
-                    classes = [];
-                }
-            } catch (error) {
-                console.error('Erreur:', error);
-                alert('Erreur Firebase. Vérifiez la configuration.');
-                classes = [];
+                document.getElementById('userInfo').textContent = `👤 ${user.email}`;
             }
             
-            renderClasses();
-            updateStats();
+            loadClasses();
         }
+    });
+    
+    // ✅ 7. FONCTION DE DÉCONNEXION
+    async function logout() {
+        if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+            try {
+                await signOut(auth);
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la déconnexion');
+            }
+        }
+    }
+    
+    // ✅ 8. CHARGER LES CLASSES (NOUVELLE SYNTAXE)
+    async function loadClasses() {
+        try {
+            const classesRef = collection(db, 'classes');
+            const querySnapshot = await getDocs(classesRef);
+            
+            classes = [];
+            querySnapshot.forEach((docSnapshot) => {
+                const data = docSnapshot.data();
+                classes.push({
+                    id: docSnapshot.id,
+                    name: data.className || docSnapshot.id,
+                    studentCount: data.students ? data.students.length : 0,
+                    lastUpdate: data.updatedAt || data.createdAt,
+                    ownerEmail: data.ownerEmail || 'Non défini',
+                    htmlFile: `${docSnapshot.id}.html`
+                });
+            });
+        } catch (error) {
+            console.error('Erreur:', error);
+            alert('Erreur Firebase. Vérifiez la configuration.');
+            classes = [];
+        }
+        
+        renderClasses();
+        updateStats();
+    }
+    
+    // ✅ 9. RENDRE LES FONCTIONS ACCESSIBLES
+    window.logout = logout;
 
         async function saveClasses() {
             try {
