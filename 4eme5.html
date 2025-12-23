@@ -416,25 +416,33 @@
         }
 
         .subject-colors {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
             margin-top: 10px;
         }
-
-        .color-option {
-            padding: 10px;
-            border-radius: 5px;
-            color: white;
-            text-align: center;
-            cursor: pointer;
-            border: 3px solid transparent;
+        .color-picker {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 10px 0;
         }
-
-        .color-option.selected {
+        .color-option {
+            width: 40px;
+            height: 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .color-option:hover {
+            transform: scale(1.1);
             border-color: #333;
         }
-
+        .color-option.selected {
+            border-color: #333;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #333;
+        }
         .action-buttons {
             display: flex;
             gap: 10px;
