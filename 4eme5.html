@@ -892,7 +892,7 @@
         // ========================================
         // VÉRIFICATION AUTHENTIFICATION
         // ========================================
-        aauth.onAuthStateChanged((user) => {
+        auth.onAuthStateChanged((user) => {
     if (!user) {
         window.location.href = 'login.html';
     } else {
