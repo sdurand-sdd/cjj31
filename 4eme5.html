@@ -1034,7 +1034,7 @@ function updateActionButtons() {
        
        async function loadStudents() {
     try {
-        // ✅ NOUVELLE SYNTAXE
+        // ✅ Charger les élèves
         const studentsRef = collection(db, 'classes', CLASS_ID, 'students');
         const querySnapshot = await getDocs(studentsRef);
         
@@ -1046,34 +1046,31 @@ function updateActionButtons() {
             });
         });
         
+        // ✅ Afficher les élèves
         displayStudents();
+        
+        // ✅ Afficher le rôle (ce code était orphelin)
+        if (isAdmin && !isOwner) {
+            document.getElementById('className').innerHTML = `${CLASS_NAME} <span style="background: #ff6b6b; color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.7em;">🛠️ Admin</span>`;
+        } else if (isOwner) {
+            document.getElementById('className').innerHTML = `${CLASS_NAME} <span style="background: #ffd700; color: #333; padding: 3px 8px; border-radius: 5px; font-size: 0.7em;">👑 Propriétaire</span>`;
+        } else {
+            document.getElementById('className').innerHTML = `${CLASS_NAME} <span style="background: #4caf50; color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.7em;">🤝 Collaborateur</span>`;
+        }
+        
+        // ✅ Masquer les boutons si collaborateur
+        if (!isOwner && !isAdmin) {
+            hideOwnerOnlyButtons();
+        }
+        
+        // ✅ Afficher la liste
+        renderStudentsList();
+        
     } catch (error) {
         console.error('Erreur:', error);
         alert('Erreur lors du chargement des élèves');
     }
 }
-                    
-                    // Afficher le rôle
-                    if (isAdmin && !isOwner) {
-                        document.getElementById('className').innerHTML = `${CLASS_NAME} <span style="background: #ff6b6b; color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.7em;">🛠️ Admin</span>`;
-                    } else if (isOwner) {
-                        document.getElementById('className').innerHTML = `${CLASS_NAME} <span style="background: #ffd700; color: #333; padding: 3px 8px; border-radius: 5px; font-size: 0.7em;">👑 Propriétaire</span>`;
-                    } else {
-                        document.getElementById('className').innerHTML = `${CLASS_NAME} <span style="background: #4caf50; color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.7em;">🤝 Collaborateur</span>`;
-                    }
-                    
-                    // Masquer les boutons de modification si collaborateur (mais pas si admin)
-                    if (!isOwner && !isAdmin) {
-                        hideOwnerOnlyButtons();
-                    }
-                }
-            } catch (error) {
-                console.error('Erreur:', error);
-                alert('Erreur Firebase. Vérifiez la configuration.');
-            }
-            
-            renderStudentsList();
-        }
 
         function hideOwnerOnlyButtons() {
             // Masquer les boutons réservés au propriétaire
