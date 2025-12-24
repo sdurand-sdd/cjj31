@@ -161,7 +161,7 @@
     <script type="module">
         // ✅ Imports Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
         // ✅ Configuration Firebase
         const firebaseConfig = {
@@ -178,21 +178,28 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // ✅ Connexion Google
+        // ✅ Gérer le retour de la redirection Google
+        getRedirectResult(auth)
+            .then((result) => {
+                if (result && result.user) {
+                    console.log('✅ Utilisateur connecté:', result.user.email);
+                    window.location.href = 'fichedesuivi.html';
+                }
+            })
+            .catch((error) => {
+                console.error('❌ Erreur redirect:', error);
+                alert('Erreur lors de la connexion Google');
+            });
+
+        // ✅ Connexion Google avec REDIRECT
         document.getElementById('googleSignInBtn').addEventListener('click', async () => {
             try {
                 const provider = new GoogleAuthProvider();
-                await signInWithPopup(auth, provider);
-                window.location.href = 'fichedesuivi.html';
+                await signInWithRedirect(auth, provider);
+                // La page va être redirigée vers Google, puis reviendra ici
             } catch (error) {
                 console.error('Erreur Google:', error);
-                if (error.code === 'auth/popup-closed-by-user') {
-                    alert('Connexion annulée');
-                } else if (error.code === 'auth/popup-blocked') {
-                    alert('Les popups sont bloquées. Autorisez-les pour vous connecter avec Google.');
-                } else {
-                    alert('Erreur de connexion avec Google. Réessayez.');
-                }
+                alert('Erreur de connexion avec Google');
             }
         });
 
