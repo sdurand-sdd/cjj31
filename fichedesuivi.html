@@ -559,56 +559,56 @@
         }
 
         function renderClasses() {
-            const grid = document.getElementById('classesGrid');
-            
-            const accessibleClasses = isAdmin ? classes : classes.filter(cls => {
-                return cls.owner === currentUserEmail || 
-                       (cls.collaborators && cls.collaborators.includes(currentUserEmail));
-            });
-
-            if (accessibleClasses.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1/-1;">
-                        <div class="empty-state-icon">📚</div>
-                        <h3>Aucune classe pour le moment</h3>
-                        <p>Ajoutez votre première classe ci-dessous pour commencer</p>
-                    </div>
-                `;
-                return;
-            }
-
-            grid.innerHTML = accessibleClasses.map((cls) => {
-                const isOwner = cls.owner === currentUserEmail;
-                let badge = '';
-                
-                if (isAdmin && !isOwner) {
-                    badge = '<div class="class-badge" style="background: #ff6b6b; color: white;">🛠️ Admin</div>';
-                } else if (isOwner) {
-                    badge = '<div class="class-badge owner">👑 Propriétaire</div>';
-                } else {
-                    badge = '<div class="class-badge collaborator">🤝 Collaborateur</div>';
-                }
-                
-                const deleteBtn = (isOwner || isAdmin) ? 
-                    `<button class="delete-btn" onclick="event.stopPropagation(); deleteClass('${cls.file}')">🗑️ Supprimer</button>` : 
-                    '';
-                
-                const manageBtn = (isOwner || isAdmin) ? 
-                    `<button class="manage-access-btn" onclick="event.stopPropagation(); openManageAccessModal('${cls.file}')">📋 Gérer les accès</button>` : 
-                    '';
-
-                return `
-                    <div class="class-card" onclick="goToClass('${cls.file}')">
-                        ${badge}
-                        <div class="class-icon">📖</div>
-                        <div class="class-name">${cls.name}</div>
-                        <div class="class-students">${cls.studentCount || 0} élève(s)</div>
-                        ${manageBtn}
-                        ${deleteBtn}
-                    </div>
-                `;
-            }).join('');
+    const grid = document.getElementById('classesGrid');
+    
+    const accessibleClasses = isAdmin ? classes : classes.filter(cls => {
+        return cls.owner === currentUserEmail || 
+               (cls.collaborators && cls.collaborators.includes(currentUserEmail));
+    });
+    
+    if (accessibleClasses.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1;">
+                <div class="empty-state-icon">📚</div>
+                <h3>Aucune classe pour le moment</h3>
+                <p>Ajoutez votre première classe ci-dessous pour commencer</p>
+            </div>
+        `;
+        return;
+    }
+    
+    grid.innerHTML = accessibleClasses.map((cls) => {
+        const isOwner = cls.owner === currentUserEmail;
+        let badge = '';
+        
+        if (isAdmin && !isOwner) {
+            badge = '<div class="class-badge" style="background: #ff6b6b; color: white;">🛠️ Admin</div>';
+        } else if (isOwner) {
+            badge = '<div class="class-badge owner">👑 Propriétaire</div>';
+        } else {
+            badge = '<div class="class-badge collaborator">🤝 Collaborateur</div>';
         }
+        
+        const deleteBtn = (isOwner || isAdmin) ? 
+            `<button class="delete-btn" onclick="event.stopPropagation(); deleteClass('${cls.id}')">🗑️ Supprimer</button>` : 
+            '';
+        
+        const manageBtn = (isOwner || isAdmin) ? 
+            `<button class="manage-access-btn" onclick="event.stopPropagation(); openManageAccessModal('${cls.id}')">📋 Gérer les accès</button>` : 
+            '';
+        
+        return `
+            <div class="class-card" onclick="goToClass('${cls.id}.html')">
+                ${badge}
+                <div class="class-icon">📖</div>
+                <div class="class-name">${cls.name}</div>
+                <div class="class-students">${cls.studentCount || 0} élève(s)</div>
+                ${manageBtn}
+                ${deleteBtn}
+            </div>
+        `;
+    }).join('');
+}
         
         async function addClass() {
             const name = document.getElementById('classNameInput').value.trim();
