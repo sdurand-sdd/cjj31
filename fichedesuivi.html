@@ -532,6 +532,12 @@
                     htmlFile: `${docSnapshot.id}.html`
                 });
             });
+
+         // ✅ AJOUTER CES LIGNES DE DEBUG
+        console.log('📊 Classes chargées:', classes);
+        console.log('👤 Current user:', currentUserEmail);
+        console.log('🛠️ Is admin:', isAdmin);
+            
         } catch (error) {
             console.error('Erreur:', error);
             alert('Erreur Firebase. Vérifiez la configuration.');
@@ -565,7 +571,11 @@
         return cls.owner === currentUserEmail || 
                (cls.collaborators && cls.collaborators.includes(currentUserEmail));
     });
-    
+
+    // ✅ AJOUTER CES LIGNES DE DEBUG
+    console.log('🔍 Classes accessibles:', accessibleClasses);
+    console.log('📧 Filtrage avec email:', currentUserEmail);
+            
     if (accessibleClasses.length === 0) {
         grid.innerHTML = `
             <div class="empty-state" style="grid-column: 1/-1;">
