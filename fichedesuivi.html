@@ -541,10 +541,11 @@
         renderClasses();
         updateStats();
     }
-    
-    // ✅ 9. RENDRE LES FONCTIONS ACCESSIBLES
-    window.logout = logout;
 
+ function goToClass(filename) {
+        window.location.href = filename;
+        }
+           
         async function saveClasses() {
             try {
                 await db.collection('fiches_suivi').doc('classes_list').set({
@@ -609,6 +610,10 @@
             }).join('');
         }
 
+        function goToClass(filename) {
+        window.location.href = filename;
+        }
+           
         async function addClass() {
             const name = document.getElementById('classNameInput').value.trim();
             const file = document.getElementById('classFileInput').value.trim();
@@ -755,9 +760,10 @@
             document.getElementById('totalStudents').textContent = totalStudents;
         }
 
-        function goToClass(filename) {
-            window.location.href = filename;
-        }
+        // ✅ 9. RENDRE LES FONCTIONS ACCESSIBLES
+        window.logout = logout;
+        window.goToClass = goToClass;  // ✅ AJOUTER ICI
+          
     </script>
 </body>
 </html>
