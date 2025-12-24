@@ -3,12 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - Fiches de Suivi</title>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    
+    <title>Connexion - Suivi de classe</title>
     <style>
         * {
             margin: 0;
@@ -17,60 +12,93 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             padding: 20px;
         }
 
         .login-container {
             background: white;
+            padding: 40px;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 450px;
             width: 100%;
-            padding: 50px 40px;
-            text-align: center;
-        }
-
-        .logo {
-            font-size: 4em;
-            margin-bottom: 20px;
+            max-width: 400px;
         }
 
         h1 {
-            color: #667eea;
-            font-size: 2em;
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background: white;
+            color: #333;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
             margin-bottom: 10px;
         }
 
-        .subtitle {
-            color: #666;
-            margin-bottom: 40px;
-            font-size: 1.1em;
+        .google-btn:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
         }
 
-        .form-group {
-            margin-bottom: 25px;
-            text-align: left;
+        .google-btn img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
         }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
-            font-size: 0.95em;
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            color: #999;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #ddd;
+        }
+
+        .divider::before {
+            left: 0;
+        }
+
+        .divider::after {
+            right: 0;
         }
 
         input {
             width: 100%;
-            padding: 15px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
             border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 16px;
             transition: all 0.3s;
         }
@@ -81,288 +109,128 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .btn-login {
+        .email-btn {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
-            margin-top: 10px;
+            transition: all 0.3s;
         }
 
-        .btn-login:hover {
+        .email-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
-        .btn-login:active {
-            transform: translateY(0);
-        }
-
-        .btn-login:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.95em;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        .loading {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .loading.show {
-            display: block;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .divider {
-            margin: 30px 0;
+        .footer {
             text-align: center;
-            position: relative;
-        }
-
-        .divider::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            width: 100%;
-            height: 1px;
-            background: #e0e0e0;
-        }
-
-        .divider span {
-            background: white;
-            padding: 0 15px;
+            margin-top: 20px;
             color: #999;
-            position: relative;
-            font-size: 0.9em;
-        }
-
-        .info-box {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 30px;
-            text-align: left;
-            font-size: 0.9em;
-        }
-
-        .info-box strong {
-            color: #1976d2;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .password-toggle {
-            position: relative;
-        }
-
-        .password-toggle input {
-            padding-right: 50px;
-        }
-
-        .toggle-btn {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2em;
-            color: #666;
-        }
-
-        .toggle-btn:hover {
-            color: #667eea;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <div class="logo">🏫</div>
-        <h1>Fiches de Suivi</h1>
-        <p class="subtitle">Connexion professeurs</p>
-
-        <div class="error-message" id="errorMessage">
-            Identifiants incorrects. Veuillez réessayer.
-        </div>
-
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="email">Adresse e-mail</label>
-                <input 
-                    type="email" 
-                    id="email" 
-                    placeholder="votre.email@college.fr"
-                    required
-                    autocomplete="email"
-                >
-            </div>
-
-            <div class="form-group">
-                <label for="password">Mot de passe</label>
-                <div class="password-toggle">
-                    <input 
-                        type="password" 
-                        id="password" 
-                        placeholder="••••••••"
-                        required
-                        autocomplete="current-password"
-                    >
-                    <button type="button" class="toggle-btn" onclick="togglePassword()">👁️</button>
-                </div>
-            </div>
-
-            <button type="submit" class="btn-login" id="loginBtn">
-                Se connecter
-            </button>
-        </form>
-
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-        </div>
-
-        <div class="info-box">
-            <strong>ℹ️ Première connexion ?</strong>
-            Contactez l'administrateur pour obtenir vos identifiants de connexion.
+        <h1>📚 Suivi de classe</h1>
+        
+        <!-- ✅ Bouton Google -->
+        <button id="googleSignInBtn" class="google-btn">
+            <img src="https://www.gstatic.com/favicon.ico" alt="Google">
+            Se connecter avec Google
+        </button>
+        
+        <!-- Séparateur -->
+        <div class="divider">OU</div>
+        
+        <!-- Formulaire email/password -->
+        <input type="email" id="email" placeholder="Email" autocomplete="email">
+        <input type="password" id="password" placeholder="Mot de passe" autocomplete="current-password">
+        <button class="email-btn" id="emailSignInBtn">Se connecter</button>
+        
+        <div class="footer">
+            Collège Jean Jaurès - Suivi de classe
         </div>
     </div>
 
-    <script>
-        // ========================================
-        // ⚠️ CONFIGURATION FIREBASE - À MODIFIER
-        // ========================================
-        const firebaseConfig = {
-          apiKey: "AIzaSyA4BpxaadwjKgiJH3rwOdk3WaJ9m5G9qqw",
-          authDomain: "suivi-classe-4eme.firebaseapp.com",
-          databaseURL: "https://suivi-classe-4eme-default-rtdb.europe-west1.firebasedatabase.app",
-          projectId: "suivi-classe-4eme",
-          storageBucket: "suivi-classe-4eme.firebasestorage.app",
-          messagingSenderId: "1088897454236",
-          appId: "1:1088897454236:web:9d2f1f5e25532e93605d59"
-};
-        // Initialiser Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+    <script type="module">
+        // ✅ Imports Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
-        // Vérifier si déjà connecté
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // Déjà connecté, rediriger vers la page d'accueil
+        // ✅ Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4BpxaadwjKgiJH3rwOdk3WaJ9m5G9qqw",
+            authDomain: "suivi-classe-4eme.firebaseapp.com",
+            databaseURL: "https://suivi-classe-4eme-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "suivi-classe-4eme",
+            storageBucket: "suivi-classe-4eme.firebasestorage.app",
+            messagingSenderId: "1088897454236",
+            appId: "1:1088897454236:web:9d2f1f5e25532e93605d59"
+        };
+
+        // ✅ Initialisation
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // ✅ Connexion Google
+        document.getElementById('googleSignInBtn').addEventListener('click', async () => {
+            try {
+                const provider = new GoogleAuthProvider();
+                await signInWithPopup(auth, provider);
                 window.location.href = 'fichedesuivi.html';
+            } catch (error) {
+                console.error('Erreur Google:', error);
+                if (error.code === 'auth/popup-closed-by-user') {
+                    alert('Connexion annulée');
+                } else if (error.code === 'auth/popup-blocked') {
+                    alert('Les popups sont bloquées. Autorisez-les pour vous connecter avec Google.');
+                } else {
+                    alert('Erreur de connexion avec Google. Réessayez.');
+                }
             }
         });
 
-        // Gestion de la connexion
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
+        // ✅ Connexion Email/Password
+        document.getElementById('emailSignInBtn').addEventListener('click', async () => {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
-            const loginBtn = document.getElementById('loginBtn');
-            const loading = document.getElementById('loading');
 
-            // Cacher le message d'erreur
-            errorMessage.classList.remove('show');
-
-            // Afficher le chargement
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Connexion en cours...';
-            loading.classList.add('show');
+            if (!email || !password) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
 
             try {
-                // Tentative de connexion
-                await auth.signInWithEmailAndPassword(email, password);
-                
-                // Succès - la redirection se fait automatiquement via onAuthStateChanged
-                
+                await signInWithEmailAndPassword(auth, email, password);
+                window.location.href = 'fichedesuivi.html';
             } catch (error) {
-                console.error('Erreur de connexion:', error);
-                
-                // Afficher le message d'erreur
-                let errorText = 'Une erreur est survenue. Veuillez réessayer.';
-                
-                switch (error.code) {
-                    case 'auth/invalid-email':
-                        errorText = 'Adresse e-mail invalide.';
-                        break;
-                    case 'auth/user-disabled':
-                        errorText = 'Ce compte a été désactivé.';
-                        break;
-                    case 'auth/user-not-found':
-                        errorText = 'Aucun compte ne correspond à cet e-mail.';
-                        break;
-                    case 'auth/wrong-password':
-                        errorText = 'Mot de passe incorrect.';
-                        break;
-                    case 'auth/invalid-credential':
-                        errorText = 'Identifiants incorrects. Vérifiez votre e-mail et mot de passe.';
-                        break;
-                    case 'auth/too-many-requests':
-                        errorText = 'Trop de tentatives. Réessayez dans quelques minutes.';
-                        break;
+                console.error('Erreur Email:', error);
+                if (error.code === 'auth/invalid-email') {
+                    alert('Email invalide');
+                } else if (error.code === 'auth/user-not-found') {
+                    alert('Aucun compte trouvé avec cet email');
+                } else if (error.code === 'auth/wrong-password') {
+                    alert('Mot de passe incorrect');
+                } else if (error.code === 'auth/invalid-credential') {
+                    alert('Email ou mot de passe incorrect');
+                } else {
+                    alert('Erreur de connexion. Vérifiez vos identifiants.');
                 }
-                
-                errorMessage.textContent = errorText;
-                errorMessage.classList.add('show');
-                
-                // Réinitialiser le bouton
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Se connecter';
-                loading.classList.remove('show');
             }
         });
 
-        // Fonction pour afficher/masquer le mot de passe
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const toggleBtn = event.target;
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleBtn.textContent = '👁️‍🗨️';
-            } else {
-                passwordInput.type = 'password';
-                toggleBtn.textContent = '👁️';
+        // ✅ Connexion avec la touche Entrée
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('emailSignInBtn').click();
             }
-        }
+        });
     </script>
 </body>
 </html>
