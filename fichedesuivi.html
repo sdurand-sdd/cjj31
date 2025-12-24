@@ -529,6 +529,7 @@
                     studentCount: data.students ? data.students.length : 0,
                     lastUpdate: data.updatedAt || data.createdAt,
                     ownerEmail: data.ownerEmail || 'Non défini',
+                    collaborators: data.collaborators || [],  // ✅ AJOUTER CETTE LIGNE
                     htmlFile: `${docSnapshot.id}.html`
                 });
             });
