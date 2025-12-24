@@ -588,7 +588,7 @@
     }
     
     grid.innerHTML = accessibleClasses.map((cls) => {
-        const isOwner = cls.owner === currentUserEmail;
+        const isOwner = cls.ownerEmail === currentUserEmail;
         let badge = '';
         
         if (isAdmin && !isOwner) {
