@@ -1514,9 +1514,15 @@ function handleSubjectChange() {
 
 // ✅ MODIFIER addSubjectToSchedule()
 async function addSubjectToSchedule() {
+    console.log('🔍 Début addSubjectToSchedule');
+    
     const day = document.getElementById('daySelect').value;
     const slot = document.getElementById('slotSelect').value;
     const subjectSelect = document.getElementById('subjectSelect').value;
+    
+    console.log('📅 Jour:', day);
+    console.log('⏰ Créneau:', slot);
+    console.log('📚 Matière sélectionnée:', subjectSelect);
     
     // Déterminer le nom de la matière
     let subjectName;
@@ -1529,14 +1535,26 @@ async function addSubjectToSchedule() {
         subjectName = subjectSelect;
     }
     
+    console.log('📖 Nom final de la matière:', subjectName);
+    
     const student = students.find(s => s.id === currentStudentId);
+    console.log('👤 Élève trouvé:', student);
+    console.log('🔢 ID élève actuel:', currentStudentId);
+    console.log('📆 Semaine sélectionnée:', selectedScheduleWeek);
+    
     const scheduleKey = selectedScheduleWeek === 'A' ? 'scheduleA' : 'scheduleB';
+    console.log('🔑 Clé de planning:', scheduleKey);
+    
     if (!student[scheduleKey]) student[scheduleKey] = {};
+    
+    console.log('📋 Planning avant ajout:', student[scheduleKey]);
     
     student[scheduleKey][`${day}-${slot}`] = {
         subject: subjectName,
         color: selectedColor
     };
+    
+    console.log('📋 Planning après ajout:', student[scheduleKey]);
     
     await saveClassData();
     renderSchedule();
@@ -1547,7 +1565,7 @@ async function addSubjectToSchedule() {
     document.getElementById('customSubjectInput').value = '';
     document.getElementById('customSubjectDiv').style.display = 'none';
 }
-async function getTrackingData() {
+    async function getTrackingData() {
     try {
         const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${currentStudentId}`);
         const docSnap = await getDoc(trackingRef);
