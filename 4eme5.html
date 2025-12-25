@@ -158,6 +158,96 @@
             width: 100%;
         }
 
+        .student-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.student-header-left {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+}
+
+.student-header-center {
+    flex: 2;
+    text-align: center;
+}
+
+.student-header-right {
+    flex: 1;
+    text-align: right;
+}
+
+#currentStudentName {
+    margin: 0;
+    color: white;
+    font-size: 2.5em;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.student-icon {
+    font-size: 1.2em;
+}
+
+.student-name-text {
+    /* Le texte du prénom */
+}
+
+/* Les boutons d'action restent comme avant */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.action-buttons button {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 2px solid white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.action-buttons button:hover {
+    background: white;
+    color: #667eea;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .student-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .student-header-left,
+    .student-header-center,
+    .student-header-right {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .action-buttons {
+        justify-content: center;
+    }
+}
+        
         .student-tracking-view {
             padding: 30px;
         }
@@ -691,24 +781,42 @@
         </div>
 
         <!-- Vue fiche individuelle -->
-        <div class="view-selector" id="studentTrackingView">
-            <div class="student-tracking-view">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 id="currentStudentName" style="color: #667eea;"></h2>
-                    <button class="btn-secondary" onclick="backToStudentsList()">← Retour</button>
-                </div>
-
-                <div class="week-navigation">
-                    <button class="nav-btn" onclick="previousWeek()">←</button>
-                    <div class="week-info">
-                        <div class="week-type" id="weekType">Semaine A</div>
-                        <div class="week-dates" id="weekDates">du 18/12 au 22/12/2025</div>
-                    </div>
-                    <button class="nav-btn" onclick="nextWeek()">→</button>
-                </div>
-
-                <div class="stats-summary" id="weekStats"></div>
-                <div class="schedule-grid" id="scheduleGrid"></div>
+        <!-- Vue fiche individuelle -->
+<div class="view-selector" id="studentTrackingView">
+    <div class="student-tracking-view">
+        <!-- ✅ NOUVEAU HEADER avec 3 zones -->
+        <div class="student-header">
+            <div class="student-header-left">
+                <div class="action-buttons" id="actionButtons"></div>
+            </div>
+            
+            <div class="student-header-center">
+                <h2 id="currentStudentName">
+                    <span class="student-icon">👨‍🎓</span>
+                    <span class="student-name-text"></span>
+                </h2>
+            </div>
+            
+            <div class="student-header-right">
+                <button class="btn-secondary" onclick="backToStudentsList()">← Retour</button>
+            </div>
+        </div>
+        
+        <!-- Navigation semaine -->
+        <div class="week-navigation">
+            <button class="nav-btn" onclick="previousWeek()">←</button>
+            <div class="week-info">
+                <div class="week-type" id="weekType">Semaine A</div>
+                <div class="week-dates" id="weekDates">du 18/12 au 22/12/2025</div>
+            </div>
+            <button class="nav-btn" onclick="nextWeek()">→</button>
+        </div>
+        
+        <!-- Stats et calendrier -->
+        <div class="stats-summary" id="weekStats"></div>
+        <div class="schedule-grid" id="scheduleGrid"></div>
+    </div>
+</div>
 
                <!-- ✅ METTRE CECI DANS LE HTML -->
                 <div class="action-buttons" id="actionButtons"></div>
@@ -1353,7 +1461,7 @@ async function loadStudents() {
         function openStudentTracking(id) {
             currentStudentId = id;
             const s = students.find(st => st.id === id);
-            document.getElementById('currentStudentName').textContent = s.name;
+            document.querySelector('#currentStudentName .student-name-text').textContent = s.name;
             document.getElementById('studentsListView').classList.remove('active');
             document.getElementById('studentTrackingView').classList.add('active');
             renderSchedule();
