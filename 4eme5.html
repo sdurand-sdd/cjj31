@@ -1211,10 +1211,12 @@ function updateActionButtons() {
         }
 
         function selectScheduleWeek(el) {
-            el.parentElement.querySelectorAll('.week-option').forEach(o => o.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedScheduleWeek = el.dataset.week;
-        }
+    console.log('🔄 Clic sur semaine:', el.dataset.week);
+    el.parentElement.querySelectorAll('.week-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedScheduleWeek = el.dataset.week;
+    console.log('✅ selectedScheduleWeek =', selectedScheduleWeek);
+}
 
        
 async function loadStudents() {
