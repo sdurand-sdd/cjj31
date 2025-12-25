@@ -1532,7 +1532,8 @@ async function addSubjectToSchedule() {
     const student = students.find(s => s.id === currentStudentId);
     const scheduleKey = selectedScheduleWeek === 'A' ? 'scheduleA' : 'scheduleB';
     if (!student[scheduleKey]) student[scheduleKey] = {};
-        student[schedulekey][`${day}-${slot}`] = {
+    
+    student[scheduleKey][`${day}-${slot}`] = {
         subject: subjectName,
         color: selectedColor
     };
@@ -1546,7 +1547,6 @@ async function addSubjectToSchedule() {
     document.getElementById('customSubjectInput').value = '';
     document.getElementById('customSubjectDiv').style.display = 'none';
 }
-
 async function getTrackingData() {
     try {
         const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${currentStudentId}`);
