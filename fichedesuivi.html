@@ -33,44 +33,19 @@
             overflow: hidden;
         }
 
-        .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 30px 40px;
+    .header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
+    padding: 30px 40px;
+    text-align: center;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.header-left {
-    flex: 1;
-    text-align: left;
-}
-
-.header-center {
-    flex: 2;
-    text-align: center;
-}
-
-.header-right {
-    flex: 1;
-    text-align: right;
+.header-top {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.header h1 {
-    margin: 0 0 5px 0;
-    font-size: 2.5em;
-    font-weight: 700;
-}
-
-.header p {
-    margin: 0;
-    font-size: 1.2em;
-    opacity: 0.9;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
 }
 
 .user-info {
@@ -78,7 +53,6 @@
     padding: 8px 15px;
     background: rgba(255,255,255,0.2);
     border-radius: 20px;
-    display: inline-block;
 }
 
 .logout-btn {
@@ -100,15 +74,27 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+.header h1 {
+    margin: 0 0 10px 0;
+    font-size: 2.5em;
+    font-weight: 700;
+}
+
+.header p {
+    margin: 0;
+    font-size: 1.2em;
+    opacity: 0.9;
+}
+
 .admin-link {
     background: rgba(255,107,107,0.2);
     color: white;
     border: 2px solid #ff6b6b;
-    padding: 8px 16px;
+    padding: 10px 20px;
     border-radius: 8px;
     text-decoration: none;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 16px;
     display: inline-block;
     transition: all 0.3s;
 }
@@ -116,28 +102,28 @@
 .admin-link:hover {
     background: #ff6b6b;
     transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
     .header {
-        flex-direction: column;
-        text-align: center;
         padding: 20px;
     }
     
-    .header-left,
-    .header-right {
-        width: 100%;
-        text-align: center;
-        margin: 10px 0;
+    .header-top {
+        flex-direction: column;
+        gap: 10px;
     }
     
-    .header-right {
-        align-items: center;
+    .header h1 {
+        font-size: 1.8em;
+    }
+    
+    .header p {
+        font-size: 1em;
     }
 }
-
         .content {
             padding: 40px;
         }
@@ -420,25 +406,21 @@
 </head>
 <body>
     <div class="container">
-       <div class="header">
-    <div class="header-left">
-        <div class="user-info" id="userInfo">👤 Chargement...</div>
-    </div>
+     <div class="header">
+            <div class="header-top">
+                <div class="user-info" id="userInfo">👤 Chargement...</div>
+                <button class="logout-btn" onclick="logout()">🚪 Déconnexion</button>
+            </div>
     
-    <div class="header-center">
         <h1>🏫 Fiches de Suivi Individuelles</h1>
         <p>Système de suivi comportemental des élèves</p>
-    </div>
     
-    <div class="header-right">
-        <button class="logout-btn" onclick="logout()">🚪 Déconnexion</button>
-        <div id="adminButton" style="margin-top: 10px; display: none;">
+            <div id="adminButton" style="margin-top: 15px; display: none;">
             <a href="admin.html" class="admin-link">
-                🛠️ Panneau d'administration
+            🛠️ Panneau d'administration
             </a>
-        </div>
+            </div>
     </div>
-</div>
 
         <div class="content">
             <div class="info-box">
