@@ -70,9 +70,10 @@
             margin-bottom: 5px;
         }
 
-        .back-btn {
-    display: inline-block;      /* ✅ Important */
-    width: auto !important;     /* ✅ Annule le width: 100% */
+       .back-btn {
+    display: inline-block !important;
+    width: auto !important;
+    max-width: 150px;
     padding: 10px 20px;
     background: #6c757d;
     color: white;
@@ -666,7 +667,7 @@
             <div style="display: flex; align-items: center; gap: 10px;">
                 <span class="user-info" id="userInfo">👤 Chargement...</span>
                 <button class="logout-btn" onclick="logout()">🚪 Déconnexion</button>
-                <a href="fichedesuivi.html" class="back-btn">← Retour</a>
+                <a href="fichedesuivi.html" class="back-btn" style="width: auto !important; display: inline-block !important; max-width: 150px;">← Retour</a>
             </div>
         </div>
 
