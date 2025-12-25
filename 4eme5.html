@@ -70,23 +70,22 @@
             margin-bottom: 5px;
         }
 
-       .back-btn {
-    display: inline-block !important;
-    width: auto !important;
-    max-width: 150px;
-    padding: 10px 20px;
-    background: #6c757d;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: all 0.3s;
-}
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
 
-.back-btn:hover {
-    background: #5a6268;
-    transform: translateY(-2px);
-}
+        .back-btn:hover {
+            background: white;
+            color: #667eea;
+        }
 
         .view-selector {
             display: none;
@@ -462,22 +461,15 @@
         }
 
         .btn-secondary {
-    background: #6c757d;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s;
-    flex-shrink: 0;        /* ✅ Empêche l'étirement dans flex */
-    width: auto;           /* ✅ Taille automatique */
-}
-
-.btn-secondary:hover {
-    background: #5a6268;
-    transform: translateY(-2px);
-}
+            background: #6c757d;
+            color: white;
+            flex: 1;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
 
         .empty-state {
             text-align: center;
@@ -661,7 +653,6 @@
             gap: 5px;
             flex-shrink: 0; /* Empêche les boutons de rétrécir */
         }
-
         
     </style>
 </head>
@@ -675,22 +666,49 @@
             <div style="display: flex; align-items: center; gap: 10px;">
                 <span class="user-info" id="userInfo">👤 Chargement...</span>
                 <button class="logout-btn" onclick="logout()">🚪 Déconnexion</button>
-                <a href="fichedesuivi.html" class="back-btn" style="width: auto !important; display: inline-block !important; max-width: 150px;">← Retour</a>
+                <a href="fichedesuivi.html" class="back-btn">← Retour</a>
             </div>
         </div>
 
         <!-- Vue liste élèves -->
-      <!-- Vue fiche individuelle -->
-<div class="view-selector" id="studentTrackingView">
-    <div class="student-tracking-view">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 id="currentStudentName" style="color: #667eea;"></h2>
-            <button class="btn-secondary" onclick="backToStudentsList()">← Retour</button>
+        <div class="view-selector active" id="studentsListView">
+            <div class="students-list-view">
+                <div id="studentsContent">
+                    <div class="action-bar">
+                        <button class="btn-primary" onclick="openClassItemsModal()">⚙️ Items par défaut</button>
+                        <button class="btn-primary" onclick="openAddStudentModal()">➕ Ajouter un élève</button>
+                    </div>
+                    <h2 style="margin-bottom: 20px; color: #333;">👥 Liste des élèves</h2>
+                    <div class="students-grid" id="studentsGrid"></div>
+                </div>
+            </div>
         </div>
-        <!-- ... calendrier ... -->
-        <div class="action-buttons" id="actionButtons"></div>
+
+        <!-- Vue fiche individuelle -->
+        <div class="view-selector" id="studentTrackingView">
+            <div class="student-tracking-view">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 id="currentStudentName" style="color: #667eea;"></h2>
+                    <button class="btn-secondary" onclick="backToStudentsList()">← Retour</button>
+                </div>
+
+                <div class="week-navigation">
+                    <button class="nav-btn" onclick="previousWeek()">←</button>
+                    <div class="week-info">
+                        <div class="week-type" id="weekType">Semaine A</div>
+                        <div class="week-dates" id="weekDates">du 18/12 au 22/12/2025</div>
+                    </div>
+                    <button class="nav-btn" onclick="nextWeek()">→</button>
+                </div>
+
+                <div class="stats-summary" id="weekStats"></div>
+                <div class="schedule-grid" id="scheduleGrid"></div>
+
+               <!-- ✅ METTRE CECI DANS LE HTML -->
+                <div class="action-buttons" id="actionButtons"></div>
+            </div>
+        </div>
     </div>
-</div>
 
     <!-- Modals -->
     <div class="modal" id="addStudentModal">
@@ -910,7 +928,7 @@
           appId: "1:1088897454236:web:9d2f1f5e25532e93605d59"
 };
         // ✅ AJOUTER CES LIGNES ICI
-        const OWNER_EMAIL = 'f.emeri@collegejj';
+        const OWNER_EMAIL = 'sophie.durand@free.fr';
         const ADMIN_EMAILS = ['collegejeanjaures.sdurand@gmail.com'];
 
        // Initialisation Firebase
@@ -920,8 +938,8 @@
 
      
         // ⚠️ IDENTIFIANT CLASSE - À MODIFIER
-        const CLASS_ID = "4eme5";
-        const CLASS_NAME = "4ème 5";
+        const CLASS_ID = "4eme4";
+        const CLASS_NAME = "4ème 4";
         
         // ⚠️ DATE DÉBUT ANNÉE SCOLAIRE - À MODIFIER
         // Format: "YYYY-MM-DD" - Premier jour de la rentrée
