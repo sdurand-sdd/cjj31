@@ -1533,7 +1533,7 @@ async function addSubjectToSchedule() {
     const scheduleKey = selectedScheduleWeek === 'A' ? 'scheduleA' : 'scheduleB';
     if (!student[scheduleKey]) student[scheduleKey] = {};
     
-    student[scheduleKey][`${day}-${slot}`] = {
+    student[scheduleKey][`${day}-${slot}`] = {  // ✅ Crochet ajouté
         subject: subjectName,
         color: selectedColor
     };
