@@ -683,37 +683,12 @@
       <!-- Vue fiche individuelle -->
 <div class="view-selector" id="studentTrackingView">
     <div class="student-tracking-view">
-        <!-- ✅ NOUVEAU HEADER avec 3 zones -->
-        <div class="student-header">
-            <div class="student-header-left">
-                <div class="action-buttons" id="actionButtons"></div>
-            </div>
-            
-            <div class="student-header-center">
-                <h2 id="currentStudentName">
-                    <span class="student-icon">👨‍🎓</span>
-                    <span class="student-name-text"></span>
-                </h2>
-            </div>
-            
-            <div class="student-header-right">
-                <button class="btn-secondary" onclick="backToStudentsList()">← Retour</button>
-            </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 id="currentStudentName" style="color: #667eea;"></h2>
+            <button class="btn-secondary" onclick="backToStudentsList()">← Retour</button>
         </div>
-        
-        <!-- Navigation semaine -->
-        <div class="week-navigation">
-            <button class="nav-btn" onclick="previousWeek()">←</button>
-            <div class="week-info">
-                <div class="week-type" id="weekType">Semaine A</div>
-                <div class="week-dates" id="weekDates">du 18/12 au 22/12/2025</div>
-            </div>
-            <button class="nav-btn" onclick="nextWeek()">→</button>
-        </div>
-        
-        <!-- Stats et calendrier -->
-        <div class="stats-summary" id="weekStats"></div>
-        <div class="schedule-grid" id="scheduleGrid"></div>
+        <!-- ... calendrier ... -->
+        <div class="action-buttons" id="actionButtons"></div>
     </div>
 </div>
 
