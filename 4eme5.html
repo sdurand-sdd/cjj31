@@ -1532,7 +1532,7 @@ async function addSubjectToSchedule() {
     const student = students.find(s => s.id === currentStudentId);
     const scheduleKey = selectedScheduleWeek === 'A' ? 'scheduleA' : 'scheduleB';
     if (!student[scheduleKey]) student[scheduleKey] = {};
-        student[schedulekeu][`${day}-${slot}`] = {
+        student[schedulekey][`${day}-${slot}`] = {
         subject: subjectName,
         color: selectedColor
     };
