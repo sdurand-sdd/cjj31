@@ -1588,7 +1588,7 @@ function renderSchedule() {
     document.getElementById('weekDates').textContent = getWeekDateRange();
     
     const grid = document.getElementById('scheduleGrid');
-    //grid.innerHTML = '<div class="grid-cell grid-header"></div>';
+    grid.innerHTML = '<div class="grid-cell grid-header"></div>';
     days.forEach(d => grid.innerHTML += `<div class="grid-cell grid-header">${d}</div>`);
     
     slots.forEach(slot => {
