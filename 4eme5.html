@@ -462,15 +462,22 @@
         }
 
         .btn-secondary {
-            background: #6c757d;
-            color: white;
-            flex: 1;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    flex-shrink: 0;        /* ✅ Empêche l'étirement dans flex */
+    width: auto;           /* ✅ Taille automatique */
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
 
         .empty-state {
             text-align: center;
