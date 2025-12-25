@@ -698,7 +698,24 @@
         .week-selector {
             display: flex;
             gap: 15px;
-            margin-top: 10px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .week-selector::before {
+            content: '⚠️ Sélectionnez d\'abord la semaine :';
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: white;
+            padding: 0 10px;
+            font-weight: bold;
+            color: #856404;
+            font-size: 0.9em;
         }
 
         .week-option {
@@ -711,6 +728,13 @@
             transition: all 0.3s;
             font-weight: bold;
             font-size: 1.1em;
+            opacity: 0.6;
+            background: white;
+        }
+
+        .week-option:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
         }
 
         .week-option.semaine-a {
@@ -724,8 +748,10 @@
         }
 
         .week-option.selected {
-            border-color: #333;
+            border-color: #ffc107;
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.3);
             transform: scale(1.05);
+            opacity: 1;
         }
         .item-label {
             display: flex;
@@ -949,7 +975,7 @@
         
         <!-- Sélection semaine -->
         <div class="week-selector">
-            <div class="week-option selected" data-week="A" onclick="selectScheduleWeek(this)">Semaine A</div>
+            <div class="week-option" data-week="A" onclick="selectScheduleWeek(this)">Semaine A</div>
             <div class="week-option" data-week="B" onclick="selectScheduleWeek(this)">Semaine B</div>
         </div>
         
@@ -1121,7 +1147,7 @@ function updateActionButtons() {
         let selectedStudentEmoji = '😊';
         let selectedClassNotationType = 'both';
         let selectedStudentNotationType = 'both';
-        let selectedScheduleWeek = 'A';
+        let selectedScheduleWeek = null;  // ✅ Aucune semaine par défaut - force le choix
         let currentUserEmail = '';
         let isOwner = false;
         let isAdmin = false;
@@ -1516,15 +1542,15 @@ function handleSubjectChange() {
 
 // ✅ MODIFIER addSubjectToSchedule()
 async function addSubjectToSchedule() {
-    console.log('🔍 Début addSubjectToSchedule');
+    // ✅ Vérification : une semaine doit être sélectionnée
+    if (!selectedScheduleWeek) {
+        alert('⚠️ Veuillez d\'abord sélectionner une semaine (A ou B)');
+        return;
+    }
     
     const day = document.getElementById('daySelect').value;
     const slot = document.getElementById('slotSelect').value;
     const subjectSelect = document.getElementById('subjectSelect').value;
-    
-    console.log('📅 Jour:', day);
-    console.log('⏰ Créneau:', slot);
-    console.log('📚 Matière sélectionnée:', subjectSelect);
     
     // Déterminer le nom de la matière
     let subjectName;
@@ -1537,35 +1563,27 @@ async function addSubjectToSchedule() {
         subjectName = subjectSelect;
     }
     
-    console.log('📖 Nom final de la matière:', subjectName);
-    
     const student = students.find(s => s.id === currentStudentId);
-    console.log('👤 Élève trouvé:', student);
-    console.log('🔢 ID élève actuel:', currentStudentId);
-    console.log('📆 Semaine sélectionnée:', selectedScheduleWeek);
-    
     const scheduleKey = selectedScheduleWeek === 'A' ? 'scheduleA' : 'scheduleB';
-    console.log('🔑 Clé de planning:', scheduleKey);
-    
     if (!student[scheduleKey]) student[scheduleKey] = {};
-    
-    console.log('📋 Planning avant ajout:', student[scheduleKey]);
     
     student[scheduleKey][`${day}-${slot}`] = {
         subject: subjectName,
         color: selectedColor
     };
     
-    console.log('📋 Planning après ajout:', student[scheduleKey]);
-    
     await saveClassData();
     renderSchedule();
-    alert('Matière ajoutée !');
+    alert(`✅ Matière ajoutée à la semaine ${selectedScheduleWeek} !`);
     
     // Réinitialiser le formulaire
     document.getElementById('subjectSelect').value = '';
     document.getElementById('customSubjectInput').value = '';
     document.getElementById('customSubjectDiv').style.display = 'none';
+    
+    // ✅ Réinitialiser la sélection de semaine
+    selectedScheduleWeek = null;
+    document.querySelectorAll('.week-option').forEach(o => o.classList.remove('selected'));
 }
     async function getTrackingData() {
     try {
