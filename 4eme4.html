@@ -158,6 +158,96 @@
             width: 100%;
         }
 
+        .student-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.student-header-left {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+}
+
+.student-header-center {
+    flex: 2;
+    text-align: center;
+}
+
+.student-header-right {
+    flex: 1;
+    text-align: right;
+}
+
+#currentStudentName {
+    margin: 0;
+    color: white;
+    font-size: 2.5em;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.student-icon {
+    font-size: 1.2em;
+}
+
+.student-name-text {
+    /* Le texte du prénom */
+}
+
+/* Les boutons d'action restent comme avant */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.action-buttons button {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 2px solid white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.action-buttons button:hover {
+    background: white;
+    color: #667eea;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .student-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .student-header-left,
+    .student-header-center,
+    .student-header-right {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .action-buttons {
+        justify-content: center;
+    }
+}
+        
         .student-tracking-view {
             padding: 30px;
         }
@@ -461,16 +551,22 @@
         }
 
         .btn-secondary {
-            background: #6c757d;
-            color: white;
-            flex: 1;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    flex-shrink: 0;        /* ✅ Empêche l'étirement dans flex */
+    width: auto;           /* ✅ Taille automatique */
+}
 
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -602,7 +698,24 @@
         .week-selector {
             display: flex;
             gap: 15px;
-            margin-top: 10px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .week-selector::before {
+            content: '⚠️ Sélectionnez d\'abord la semaine :';
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: white;
+            padding: 0 10px;
+            font-weight: bold;
+            color: #856404;
+            font-size: 0.9em;
         }
 
         .week-option {
@@ -615,6 +728,13 @@
             transition: all 0.3s;
             font-weight: bold;
             font-size: 1.1em;
+            opacity: 0.6;
+            background: white;
+        }
+
+        .week-option:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
         }
 
         .week-option.semaine-a {
@@ -628,8 +748,10 @@
         }
 
         .week-option.selected {
-            border-color: #333;
+            border-color: #ffc107;
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.3);
             transform: scale(1.05);
+            opacity: 1;
         }
         .item-label {
             display: flex;
@@ -685,24 +807,42 @@
         </div>
 
         <!-- Vue fiche individuelle -->
-        <div class="view-selector" id="studentTrackingView">
-            <div class="student-tracking-view">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 id="currentStudentName" style="color: #667eea;"></h2>
-                    <button class="btn-secondary" onclick="backToStudentsList()">← Retour</button>
-                </div>
-
-                <div class="week-navigation">
-                    <button class="nav-btn" onclick="previousWeek()">←</button>
-                    <div class="week-info">
-                        <div class="week-type" id="weekType">Semaine A</div>
-                        <div class="week-dates" id="weekDates">du 18/12 au 22/12/2025</div>
-                    </div>
-                    <button class="nav-btn" onclick="nextWeek()">→</button>
-                </div>
-
-                <div class="stats-summary" id="weekStats"></div>
-                <div class="schedule-grid" id="scheduleGrid"></div>
+        <!-- Vue fiche individuelle -->
+<div class="view-selector" id="studentTrackingView">
+    <div class="student-tracking-view">
+        <!-- ✅ NOUVEAU HEADER avec 3 zones -->
+        <div class="student-header">
+            <div class="student-header-left">
+                <div class="action-buttons" id="actionButtons"></div>
+            </div>
+            
+            <div class="student-header-center">
+                <h2 id="currentStudentName">
+                    <span class="student-icon">👨‍🎓</span>
+                    <span class="student-name-text"></span>
+                </h2>
+            </div>
+            
+            <div class="student-header-right">
+                <button class="btn-secondary" onclick="backToStudentsList()">← Retour</button>
+            </div>
+        </div>
+        
+        <!-- Navigation semaine -->
+        <div class="week-navigation">
+            <button class="nav-btn" onclick="previousWeek()">←</button>
+            <div class="week-info">
+                <div class="week-type" id="weekType">Semaine A</div>
+                <div class="week-dates" id="weekDates">du 18/12 au 22/12/2025</div>
+            </div>
+            <button class="nav-btn" onclick="nextWeek()">→</button>
+        </div>
+        
+        <!-- Stats et calendrier -->
+        <div class="stats-summary" id="weekStats"></div>
+        <div class="schedule-grid" id="scheduleGrid"></div>
+    </div>
+</div>
 
                <!-- ✅ METTRE CECI DANS LE HTML -->
                 <div class="action-buttons" id="actionButtons"></div>
@@ -835,7 +975,7 @@
         
         <!-- Sélection semaine -->
         <div class="week-selector">
-            <div class="week-option selected" data-week="A" onclick="selectScheduleWeek(this)">Semaine A</div>
+            <div class="week-option" data-week="A" onclick="selectScheduleWeek(this)">Semaine A</div>
             <div class="week-option" data-week="B" onclick="selectScheduleWeek(this)">Semaine B</div>
         </div>
         
@@ -1007,7 +1147,7 @@ function updateActionButtons() {
         let selectedStudentEmoji = '😊';
         let selectedClassNotationType = 'both';
         let selectedStudentNotationType = 'both';
-        let selectedScheduleWeek = 'A';
+        let selectedScheduleWeek = null;  // ✅ Aucune semaine par défaut - force le choix
         let currentUserEmail = '';
         let isOwner = false;
         let isAdmin = false;
@@ -1097,10 +1237,12 @@ function updateActionButtons() {
         }
 
         function selectScheduleWeek(el) {
-            el.parentElement.querySelectorAll('.week-option').forEach(o => o.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedScheduleWeek = el.dataset.week;
-        }
+    console.log('🔄 Clic sur semaine:', el.dataset.week);
+    el.parentElement.querySelectorAll('.week-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedScheduleWeek = el.dataset.week;
+    console.log('✅ selectedScheduleWeek =', selectedScheduleWeek);
+}
 
        
 async function loadStudents() {
@@ -1347,7 +1489,7 @@ async function loadStudents() {
         function openStudentTracking(id) {
             currentStudentId = id;
             const s = students.find(st => st.id === id);
-            document.getElementById('currentStudentName').textContent = s.name;
+            document.querySelector('#currentStudentName .student-name-text').textContent = s.name;
             document.getElementById('studentsListView').classList.remove('active');
             document.getElementById('studentTrackingView').classList.add('active');
             renderSchedule();
@@ -1400,6 +1542,12 @@ function handleSubjectChange() {
 
 // ✅ MODIFIER addSubjectToSchedule()
 async function addSubjectToSchedule() {
+    // ✅ Vérification : une semaine doit être sélectionnée
+    if (!selectedScheduleWeek) {
+        alert('⚠️ Veuillez d\'abord sélectionner une semaine (A ou B)');
+        return;
+    }
+    
     const day = document.getElementById('daySelect').value;
     const slot = document.getElementById('slotSelect').value;
     const subjectSelect = document.getElementById('subjectSelect').value;
@@ -1426,15 +1574,18 @@ async function addSubjectToSchedule() {
     
     await saveClassData();
     renderSchedule();
-    alert('Matière ajoutée !');
+    alert(`✅ Matière ajoutée à la semaine ${selectedScheduleWeek} !`);
     
     // Réinitialiser le formulaire
     document.getElementById('subjectSelect').value = '';
     document.getElementById('customSubjectInput').value = '';
     document.getElementById('customSubjectDiv').style.display = 'none';
+    
+    // ✅ Réinitialiser la sélection de semaine
+    selectedScheduleWeek = null;
+    document.querySelectorAll('.week-option').forEach(o => o.classList.remove('selected'));
 }
-
-async function getTrackingData() {
+    async function getTrackingData() {
     try {
         const trackingRef = doc(db, 'tracking', `${CLASS_ID}_${currentStudentId}`);
         const docSnap = await getDoc(trackingRef);
