@@ -770,33 +770,59 @@
         }
 
         /* ✅ RESPONSIVE MOBILE */
-        @media (max-width: 768px) {
-            .student-header {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .student-header-left,
-            .student-header-center,
-            .student-header-right {
-                width: 100%;
-                text-align: center;
-            }
-            
-            .action-buttons {
-                justify-content: center;
-            }
+       @media (max-width: 768px) {
+    .student-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .student-header-left,
+    .student-header-center,
+    .student-header-right {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .action-buttons {
+        justify-content: center;
+    }
 
-            .schedule-grid {
-                grid-template-columns: 80px repeat(5, minmax(120px, 1fr));
-                min-width: 700px;
-                font-size: 0.85em;
-            }
-            
-            .grid-cell {
-                padding: 8px;
-            }
-        }
+    .schedule-grid {
+        grid-template-columns: 80px repeat(5, minmax(140px, 1fr));  /* ✅ 140px au lieu de 120px */
+        min-width: 750px;  /* ✅ Un peu plus large */
+        font-size: 0.9em;  /* ✅ Police moins réduite */
+    }
+    
+    .grid-cell {
+        padding: 10px 6px;  /* ✅ Padding vertical augmenté */
+        min-height: 140px;  /* ✅ Hauteur minimale pour les boutons */
+    }
+
+    /* ✅ Boutons +1/-1 plus visibles sur mobile */
+    .track-btn {
+        width: 32px;   /* ✅ Plus large */
+        height: 32px;  /* ✅ Plus haut */
+        font-size: 11px;  /* ✅ Police plus grande */
+    }
+
+    /* ✅ Labels des items plus petits */
+    .item-label {
+        font-size: 10px;
+        min-width: 90px;
+    }
+
+    /* ✅ Nom de matière plus petit */
+    .subject-name {
+        font-size: 0.75em;
+        padding: 3px;
+    }
+
+    /* ✅ Espacement entre les lignes d'items */
+    .tracking-row {
+        padding: 3px 0;
+        margin-bottom: 2px;
+    }
+}
 </style>  
  
 </head>
