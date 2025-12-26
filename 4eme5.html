@@ -252,21 +252,62 @@
             padding: 30px;
         }
 
-        .schedule-grid {
-            display: grid;
-            grid-template-columns: 100px repeat(5, 1fr);
-            gap: 2px;
-            background: #ddd;
-            border: 2px solid #ddd;
-            margin-top: 20px;
-        }
+ /* Conteneur avec scroll horizontal */
+.schedule-container {
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Grille du calendrier */
+.schedule-grid {
+    display: grid;
+    grid-template-columns: 100px repeat(5, minmax(150px, 1fr));  /* ✅ Largeur min des colonnes */
+    gap: 2px;
+    background: #ddd;
+    border-radius: 10px;
+    min-width: 850px;  /* ✅ Largeur minimale totale */
+}
+
+/* Style du scrollbar (optionnel, pour le rendre joli) */
+.schedule-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.schedule-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.schedule-container::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 10px;
+}
+
+.schedule-container::-webkit-scrollbar-thumb:hover {
+    background: #5568d3;
+}
 
         .grid-cell {
             background: white;
             padding: 12px;
             min-height: 120px;
         }
-
+@media (max-width: 768px) {
+    .schedule-grid {
+        grid-template-columns: 80px repeat(5, minmax(120px, 1fr));  /* Colonnes plus petites */
+        min-width: 700px;
+        font-size: 0.85em;  /* Texte légèrement plus petit */
+    }
+    
+    .grid-cell {
+        padding: 8px;  /* Padding réduit */
+    }
+}
+        
         .grid-header {
             background: #667eea;
             color: white;
@@ -840,7 +881,9 @@
         
         <!-- Stats et calendrier -->
         <div class="stats-summary" id="weekStats"></div>
-        <div class="schedule-grid" id="scheduleGrid"></div>
+       <div class="schedule-container">
+    <div class="schedule-grid" id="scheduleGrid"></div>
+</div>
     </div>
 </div>
 
