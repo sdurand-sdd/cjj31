@@ -30,77 +30,47 @@
             max-width: 400px;
         }
 
-        h1 {
+        .header {
             text-align: center;
-            color: #333;
             margin-bottom: 30px;
-            font-size: 28px;
         }
 
-        .google-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 12px;
-            background: white;
-            color: #333;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
+        .header-icon {
+            font-size: 4em;
             margin-bottom: 10px;
         }
 
-        .google-btn:hover {
-            background: #f8f9fa;
-            border-color: #667eea;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-            transform: translateY(-2px);
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
         }
 
-        .google-btn img {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-        }
-
-        .divider {
-            text-align: center;
-            margin: 25px 0;
-            color: #999;
+        .subtitle {
+            color: #666;
             font-size: 14px;
-            position: relative;
         }
 
-        .divider::before,
-        .divider::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: 40%;
-            height: 1px;
-            background: #ddd;
+        .form-group {
+            margin-bottom: 20px;
         }
 
-        .divider::before {
-            left: 0;
-        }
-
-        .divider::after {
-            right: 0;
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
         }
 
         input {
             width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 15px;
+            padding: 14px 16px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 16px;
             transition: all 0.3s;
+            font-family: inherit;
         }
 
         input:focus {
@@ -109,9 +79,9 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .email-btn {
+        .login-btn {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
@@ -120,50 +90,130 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            margin-top: 10px;
         }
 
-        .email-btn:hover {
+        .login-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
         .footer {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 30px;
             color: #999;
             font-size: 12px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .info-box strong {
+            color: #1976d2;
+            display: block;
+            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <h1>📚 Suivi de classe</h1>
-        
-        <!-- ✅ Bouton Google -->
-        <button id="googleSignInBtn" class="google-btn">
-           <svg width="20" height="20" viewBox="0 0 48 48">
-    <!-- Logo Google officiel avec les 4 couleurs -->
-</svg>
-            Se connecter avec Google
-        </button>
-        
-        <!-- Séparateur -->
-        <div class="divider">OU</div>
-        
-        <!-- Formulaire email/password -->
-        <input type="email" id="email" placeholder="Email" autocomplete="email">
-        <input type="password" id="password" placeholder="Mot de passe" autocomplete="current-password">
-        <button class="email-btn" id="emailSignInBtn">Se connecter</button>
-        
+        <div class="header">
+            <div class="header-icon">📚</div>
+            <h1>Suivi de classe</h1>
+            <p class="subtitle">Collège Jean Jaurès</p>
+        </div>
+
+        <div class="info-box">
+            <strong>ℹ️ Première connexion</strong>
+            Utilisez les identifiants fournis par l'administrateur.
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <div id="loginForm">
+            <div class="form-group">
+                <label for="email">📧 Adresse email</label>
+                <input type="email" id="email" placeholder="votre.email@exemple.com" autocomplete="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">🔑 Mot de passe</label>
+                <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
+            </div>
+
+            <button class="login-btn" id="loginBtn">Se connecter</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 15px; color: #667eea;">Connexion en cours...</p>
+        </div>
+
         <div class="footer">
-            Collège Jean Jaurès - Suivi de classe
+            © 2025 - Système de suivi comportemental
         </div>
     </div>
 
     <script type="module">
         // ✅ Imports Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
         // ✅ Configuration Firebase
         const firebaseConfig = {
@@ -180,82 +230,118 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // ✅ Vérifier si l'utilisateur est déjà connecté
+        // ✅ Éléments DOM
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const loginForm = document.getElementById('loginForm');
+        const loading = document.getElementById('loading');
+
+        // ✅ Vérifier si déjà connecté
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                console.log('✅ Utilisateur connecté:', user.email);
-                // Rediriger seulement si on revient de Google (pas au chargement normal)
-                if (document.referrer.includes('accounts.google.com') || sessionStorage.getItem('googleSignInAttempt')) {
-                    sessionStorage.removeItem('googleSignInAttempt');
-                    window.location.href = 'fichedesuivi.html';
-                }
+                console.log('✅ Utilisateur déjà connecté:', user.email);
+                window.location.href = 'fichedesuivi.html';
             }
         });
 
-        // ✅ Gérer le retour de la redirection Google
-        getRedirectResult(auth)
-            .then((result) => {
-                if (result && result.user) {
-                    console.log('✅ Retour Google réussi:', result.user.email);
-                    window.location.href = 'fichedesuivi.html';
-                }
-            })
-            .catch((error) => {
-                console.error('❌ Erreur redirect:', error);
-                alert('Erreur lors de la connexion Google');
-            });
+        // ✅ Fonction de connexion
+        async function handleLogin() {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
 
-        // ✅ Connexion Google avec REDIRECT
-        document.getElementById('googleSignInBtn').addEventListener('click', async () => {
-            try {
-                // Marquer qu'on tente une connexion Google
-                sessionStorage.setItem('googleSignInAttempt', 'true');
-                
-                const provider = new GoogleAuthProvider();
-                await signInWithRedirect(auth, provider);
-                // La page va être redirigée vers Google, puis reviendra ici
-            } catch (error) {
-                console.error('Erreur Google:', error);
-                sessionStorage.removeItem('googleSignInAttempt');
-                alert('Erreur de connexion avec Google');
-            }
-        });
-
-        // ✅ Connexion Email/Password
-        document.getElementById('emailSignInBtn').addEventListener('click', async () => {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-
+            // Validation
             if (!email || !password) {
-                alert('Veuillez remplir tous les champs');
+                showError('Veuillez remplir tous les champs');
                 return;
             }
 
+            if (!email.includes('@')) {
+                showError('Adresse email invalide');
+                return;
+            }
+
+            // Afficher loading
+            loginForm.style.display = 'none';
+            loading.classList.add('show');
+            loginBtn.disabled = true;
+
             try {
-                await signInWithEmailAndPassword(auth, email, password);
+                // Connexion
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                console.log('✅ Connexion réussie:', userCredential.user.email);
+                
+                // Redirection
                 window.location.href = 'fichedesuivi.html';
+
             } catch (error) {
-                console.error('Erreur Email:', error);
-                if (error.code === 'auth/invalid-email') {
-                    alert('Email invalide');
-                } else if (error.code === 'auth/user-not-found') {
-                    alert('Aucun compte trouvé avec cet email');
-                } else if (error.code === 'auth/wrong-password') {
-                    alert('Mot de passe incorrect');
-                } else if (error.code === 'auth/invalid-credential') {
-                    alert('Email ou mot de passe incorrect');
-                } else {
-                    alert('Erreur de connexion. Vérifiez vos identifiants.');
+                console.error('❌ Erreur connexion:', error);
+                
+                // Masquer loading
+                loginForm.style.display = 'block';
+                loading.classList.remove('show');
+                loginBtn.disabled = false;
+
+                // Messages d'erreur en français
+                let message = 'Erreur de connexion';
+                
+                switch(error.code) {
+                    case 'auth/invalid-email':
+                        message = 'Adresse email invalide';
+                        break;
+                    case 'auth/user-not-found':
+                        message = 'Aucun compte trouvé avec cet email';
+                        break;
+                    case 'auth/wrong-password':
+                        message = 'Mot de passe incorrect';
+                        break;
+                    case 'auth/invalid-credential':
+                        message = 'Email ou mot de passe incorrect';
+                        break;
+                    case 'auth/too-many-requests':
+                        message = 'Trop de tentatives. Réessayez dans quelques minutes';
+                        break;
+                    case 'auth/network-request-failed':
+                        message = 'Erreur de connexion réseau. Vérifiez votre connexion internet';
+                        break;
+                    default:
+                        message = 'Erreur de connexion. Vérifiez vos identifiants';
                 }
+                
+                showError(message);
+            }
+        }
+
+        // ✅ Afficher erreur
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+            
+            // Masquer après 5 secondes
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 5000);
+        }
+
+        // ✅ Événement clic bouton
+        loginBtn.addEventListener('click', handleLogin);
+
+        // ✅ Événement touche Entrée
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleLogin();
             }
         });
 
-        // ✅ Connexion avec la touche Entrée
-        document.getElementById('password').addEventListener('keypress', (e) => {
+        emailInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                document.getElementById('emailSignInBtn').click();
+                passwordInput.focus();
             }
         });
+
+        // ✅ Focus automatique sur l'email au chargement
+        emailInput.focus();
     </script>
 </body>
 </html>
