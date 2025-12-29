@@ -161,7 +161,7 @@
     <script type="module">
         // ✅ Imports Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
         // ✅ Configuration Firebase
         const firebaseConfig = {
@@ -178,11 +178,23 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        // ✅ Vérifier si l'utilisateur est déjà connecté
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log('✅ Utilisateur connecté:', user.email);
+                // Rediriger seulement si on revient de Google (pas au chargement normal)
+                if (document.referrer.includes('accounts.google.com') || sessionStorage.getItem('googleSignInAttempt')) {
+                    sessionStorage.removeItem('googleSignInAttempt');
+                    window.location.href = 'fichedesuivi.html';
+                }
+            }
+        });
+
         // ✅ Gérer le retour de la redirection Google
         getRedirectResult(auth)
             .then((result) => {
                 if (result && result.user) {
-                    console.log('✅ Utilisateur connecté:', result.user.email);
+                    console.log('✅ Retour Google réussi:', result.user.email);
                     window.location.href = 'fichedesuivi.html';
                 }
             })
@@ -194,11 +206,15 @@
         // ✅ Connexion Google avec REDIRECT
         document.getElementById('googleSignInBtn').addEventListener('click', async () => {
             try {
+                // Marquer qu'on tente une connexion Google
+                sessionStorage.setItem('googleSignInAttempt', 'true');
+                
                 const provider = new GoogleAuthProvider();
                 await signInWithRedirect(auth, provider);
                 // La page va être redirigée vers Google, puis reviendra ici
             } catch (error) {
                 console.error('Erreur Google:', error);
+                sessionStorage.removeItem('googleSignInAttempt');
                 alert('Erreur de connexion avec Google');
             }
         });
