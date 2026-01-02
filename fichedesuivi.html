@@ -531,12 +531,12 @@
             currentUserEmail = user.email;
             isAdmin = ADMIN_EMAILS.includes(currentUserEmail);
             
-            if (isAdmin) {
-                document.getElementById('userInfo').textContent = `🛠️ Admin: ${user.email}`;
-                document.getElementById('adminButton').style.display = 'block';
-            } else {
-                document.getElementById('userInfo').textContent = `👤 ${user.email}`;
-            }
+        if (isAdmin) {
+            document.getElementById('userInfo').textContent = `🛠️ Admin`;
+            document.getElementById('adminButton').style.display = 'block';
+        } else {
+            document.getElementById('userInfo').textContent = `👤 Utilisateur`;
+        }
             
             loadClasses();
         }
