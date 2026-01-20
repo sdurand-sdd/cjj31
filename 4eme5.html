@@ -7,6 +7,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
         <script src="syntheses.js" defer></script>
+
+        <link rel="stylesheet" href="syntheses_styles.css">
 <style>
         * {
             margin: 0;
@@ -902,6 +904,93 @@
         </div>
     </div>
 
+    <!-- Vue Synthèses -->
+<div class="view-selector" id="synthesisView">
+    <div class="syntheses-view">
+        <div class="student-header">
+            <div class="student-header-left">
+                <button class="btn-secondary" onclick="backToTracking()">← Retour au suivi</button>
+            </div>
+            <div class="student-header-center">
+                <h2 id="synthesisStudentName">
+                    <span>📊 Synthèses - <span id="synthesisStudentNameText"></span></span>
+                </h2>
+            </div>
+        </div>
+
+        <!-- Synthèse du jour -->
+        <div class="synthesis-section">
+            <div class="synthesis-header">
+                <h2>📅 Synthèse du jour</h2>
+                <span class="synthesis-period" id="todayDate"></span>
+            </div>
+            <div class="synthesis-stats" id="todayStats"></div>
+            <div class="export-buttons">
+                <button class="btn-export-pdf" onclick="exportPDF('today')">📄 Export PDF</button>
+                <button class="btn-export-csv" onclick="exportCSV('today')">📊 Export CSV</button>
+            </div>
+        </div>
+
+        <!-- Synthèse de la semaine -->
+        <div class="synthesis-section">
+            <div class="synthesis-header">
+                <h2>📅 Synthèse de la semaine</h2>
+                <span class="synthesis-period" id="weekPeriod"></span>
+            </div>
+            <div class="synthesis-stats" id="weekSynthesisStats"></div>
+            <div class="chart-container">
+                <canvas id="weekChart"></canvas>
+            </div>
+            <div class="export-buttons">
+                <button class="btn-export-pdf" onclick="exportPDF('week')">📄 Export PDF</button>
+                <button class="btn-export-csv" onclick="exportCSV('week')">📊 Export CSV</button>
+            </div>
+        </div>
+
+        <!-- Synthèse personnalisée -->
+        <div class="synthesis-section">
+            <div class="synthesis-header">
+                <h2>📅 Synthèse sur période personnalisée</h2>
+            </div>
+            <div class="period-selector">
+                <div>
+                    <label>Du :</label>
+                    <input type="date" id="customStartDate">
+                </div>
+                <div>
+                    <label>Au :</label>
+                    <input type="date" id="customEndDate">
+                </div>
+                <button onclick="calculateCustomPeriod()">📊 Calculer</button>
+            </div>
+            <div class="synthesis-stats" id="customStats"></div>
+            <div class="chart-container" style="display:none;" id="customChartContainer">
+                <canvas id="customChart"></canvas>
+            </div>
+            <div class="export-buttons" style="display:none;" id="customExportButtons">
+                <button class="btn-export-pdf" onclick="exportPDF('custom')">📄 Export PDF</button>
+                <button class="btn-export-csv" onclick="exportCSV('custom')">📊 Export CSV</button>
+            </div>
+        </div>
+
+        <!-- Cumul total -->
+        <div class="synthesis-section">
+            <div class="synthesis-header">
+                <h2>📅 Cumul total (depuis le début)</h2>
+                <span class="synthesis-period" id="totalPeriod"></span>
+            </div>
+            <div class="synthesis-stats" id="totalStats"></div>
+            <div class="chart-container">
+                <canvas id="totalChart"></canvas>
+            </div>
+            <div class="export-buttons">
+                <button class="btn-export-pdf" onclick="exportPDF('total')">📄 Export PDF</button>
+                <button class="btn-export-csv" onclick="exportCSV('total')">📊 Export CSV</button>
+            </div>
+        </div>
+    </div>
+</div>
+    
     <!-- Modals -->
     <div class="modal" id="addStudentModal">
         <div class="modal-content">
