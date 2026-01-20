@@ -339,17 +339,16 @@
 
     <script>
         // ========================================
-        // ⚠️ CONFIGURATION FIREBASE - À MODIFIER
+        // ⚠️ CONFIGURATION FIREBASE - NOUVEAU PROJET
         // ========================================
         const firebaseConfig = {
-    apiKey: "AIzaSyBzLYwoAMHIEIwXewml0OWVOdoPimUQONs",
-    authDomain: "suivi-individuel-clg.firebaseapp.com",
-    projectId: "suivi-individuel-clg",
-    storageBucket: "suivi-individuel-clg.firebasestorage.app",
-    messagingSenderId: "134262352994",
-    appId: "1:134262352994:web:1fa03154ade8fb3160353b"
-  };
-
+            apiKey: "AIzaSyBzLYwoAMHIEIwXewml0OWVOdoPimUQONs",
+            authDomain: "suivi-individuel-clg.firebaseapp.com",
+            projectId: "suivi-individuel-clg",
+            storageBucket: "suivi-individuel-clg.firebasestorage.app",
+            messagingSenderId: "134262352994",
+            appId: "1:134262352994:web:1fa03154ade8fb3160353b"
+        };
 
         // ========================================
         // ⚠️ EMAIL ADMINISTRATEUR
@@ -394,15 +393,42 @@
             }
         }
 
+        // ========================================
+        // FONCTION CORRIGÉE - Lit depuis 'classes'
+        // ========================================
         async function loadData() {
             try {
-                const doc = await db.collection('fiches_suivi').doc('classes_list').get();
-                if (doc.exists) {
-                    classes = doc.data().classes || [];
-                }
+                const snapshot = await db.collection('classes').get();
+                classes = [];
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    
+                    // Calculer le nombre d'élèves
+                    let studentCount = 0;
+                    if (data.students && typeof data.students === 'object') {
+                        studentCount = Object.keys(data.students).length;
+                    }
+                    
+                    // Déterminer le nom du fichier HTML
+                    const className = doc.id;
+                    const fileNameBase = className.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    
+                    classes.push({
+                        id: doc.id,
+                        name: className,
+                        owner: data.ownerEmail || 'N/A',
+                        studentCount: studentCount,
+                        collaborators: data.collaborators || [],
+                        createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : null,
+                        file: `classe${fileNameBase}.html`
+                    });
+                });
+                
+                console.log('Classes chargées:', classes);
             } catch (error) {
-                console.error('Erreur:', error);
-                alert('Erreur de chargement des données');
+                console.error('Erreur lors du chargement:', error);
+                alert('Erreur de chargement des données: ' + error.message);
             }
 
             document.getElementById('loading').style.display = 'none';
@@ -418,12 +444,12 @@
             const totalStudents = classes.reduce((sum, cls) => sum + (cls.studentCount || 0), 0);
             document.getElementById('totalStudents').textContent = totalStudents;
             
-            const owners = new Set(classes.map(cls => cls.owner).filter(Boolean));
+            const owners = new Set(classes.map(cls => cls.owner).filter(o => o && o !== 'N/A'));
             document.getElementById('totalOwners').textContent = owners.size;
             
             const allCollaborators = new Set();
             classes.forEach(cls => {
-                if (cls.collaborators) {
+                if (cls.collaborators && Array.isArray(cls.collaborators)) {
                     cls.collaborators.forEach(c => allCollaborators.add(c));
                 }
             });
@@ -453,7 +479,7 @@
                     <tr>
                         <td><strong>${cls.name}</strong></td>
                         <td>
-                            ${cls.owner ? `
+                            ${cls.owner && cls.owner !== 'N/A' ? `
                                 <span class="badge badge-owner">👤 ${cls.owner}</span>
                             ` : '<em>Aucun propriétaire</em>'}
                         </td>
@@ -477,27 +503,43 @@
             window.location.href = filename;
         }
 
+        // ========================================
+        // FONCTION CORRIGÉE - Supprime depuis 'classes'
+        // ========================================
         async function deleteClass(index) {
             const cls = classes[index];
-            if (confirm(`Êtes-vous sûr de vouloir supprimer la classe "${cls.name}" ?\n\n⚠️ Attention : Cette action est irréversible et supprimera le lien vers cette classe (mais pas le fichier HTML ni les données élèves).`)) {
-                classes.splice(index, 1);
-                
+            if (confirm(`Êtes-vous sûr de vouloir supprimer la classe "${cls.name}" ?\n\n⚠️ Attention : Cette action est irréversible et supprimera toutes les données de cette classe (élèves, emplois du temps, fiches de suivi).`)) {
                 try {
-                    await db.collection('fiches_suivi').doc('classes_list').set({
-                        classes: classes,
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    // Supprimer le document de la classe dans Firestore
+                    await db.collection('classes').doc(cls.id).delete();
+                    
+                    // Supprimer également les données de tracking associées si elles existent
+                    const trackingSnapshot = await db.collection('tracking')
+                        .where('classId', '==', cls.id)
+                        .get();
+                    
+                    const batch = db.batch();
+                    trackingSnapshot.docs.forEach(doc => {
+                        batch.delete(doc.ref);
                     });
+                    await batch.commit();
+                    
+                    // Retirer de la liste locale
+                    classes.splice(index, 1);
                     
                     updateStats();
                     renderClassesTable();
                     alert('Classe supprimée avec succès');
                 } catch (error) {
                     console.error('Erreur:', error);
-                    alert('Erreur lors de la suppression');
+                    alert('Erreur lors de la suppression: ' + error.message);
                 }
             }
         }
 
+        // ========================================
+        // FONCTION CORRIGÉE - Réinitialisation
+        // ========================================
         async function resetAllData() {
             // Première confirmation
             const confirm1 = confirm(
@@ -547,11 +589,7 @@
                     </div>
                 `;
 
-                // 1. Supprimer la liste des classes
-                await db.collection('fiches_suivi').doc('classes_list').delete();
-                console.log('✅ Liste des classes supprimée');
-
-                // 2. Supprimer toutes les données de classes
+                // 1. Supprimer toutes les données de classes
                 const classesSnapshot = await db.collection('classes').get();
                 const classesBatch = db.batch();
                 classesSnapshot.docs.forEach(doc => {
@@ -560,7 +598,7 @@
                 await classesBatch.commit();
                 console.log('✅ Données des classes supprimées');
 
-                // 3. Supprimer toutes les données de tracking
+                // 2. Supprimer toutes les données de tracking
                 const trackingSnapshot = await db.collection('tracking').get();
                 const trackingBatch = db.batch();
                 trackingSnapshot.docs.forEach(doc => {
