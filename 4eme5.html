@@ -1422,6 +1422,10 @@ async function loadStudents() {
         if (!isOwner && !isAdmin) {
             hideOwnerOnlyButtons();
         }
+
+        // Mettre à jour window pour syntheses.js
+        window.students = students;
+        window.classItems = classItems;
         
         // ✅ Afficher la liste
         renderStudentsList();
@@ -1630,6 +1634,7 @@ async function loadStudents() {
 }
         function openStudentTracking(id) {
             currentStudentId = id;
+            window.currentStudentId = currentStudentId;  // ← LIGNE AJOUTÉE
             const s = students.find(st => st.id === id);
             document.querySelector('#currentStudentName .student-name-text').textContent = s.name;
             document.getElementById('studentsListView').classList.remove('active');
