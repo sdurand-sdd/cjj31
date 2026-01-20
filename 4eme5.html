@@ -1940,8 +1940,17 @@ window.selectEmoji = selectEmoji;
 window.selectNotationType = selectNotationType;
 window.selectScheduleWeek = selectScheduleWeek;
 window.handleSubjectChange = handleSubjectChange;
+// Exposer les variables pour syntheses.js
+window.students = students;
+window.classItems = classItems;
+window.currentStudentId = currentStudentId;
+window.db = db;
+window.CLASS_ID = CLASS_ID;
+window.SCHOOL_YEAR_START = SCHOOL_YEAR_START;
+window.slots = ['M1', 'M2', 'M3', 'M4', 'S0', 'S1', 'S2', 'S3'];
+window.days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
 
-// Initialisation
+        // Initialisation
         loadStudents();
     </script>
 </body>
